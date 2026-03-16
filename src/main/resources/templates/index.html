@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duo - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 60px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 36px;
+        }
+
+        .user-info {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .user-info p {
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .user-info strong {
+            color: #667eea;
+        }
+
+        .buttons {
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            margin: 0 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .welcome {
+            color: #666;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Duo에 오신 것을 환영합니다!</h1>
+
+        <!-- 로그인한 사용자 -->
+        <div sec:authorize="isAuthenticated()" class="user-info">
+            <p><strong>이름:</strong> <span sec:authentication="principal.user.name"></span></p>
+            <p><strong>아이디:</strong> <span sec:authentication="principal.user.username"></span></p>
+            <p><strong>권한:</strong> <span sec:authentication="principal.user.role"></span></p>
+
+            <div class="buttons">
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-secondary">로그아웃</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 비로그인 사용자 -->
+        <div sec:authorize="!isAuthenticated()">
+            <p class="welcome">로그인하여 Duo의 다양한 기능을 이용해보세요!</p>
+            <div class="buttons">
+                <a th:href="@{/login}" class="btn btn-primary">로그인</a>
+                <a th:href="@{/signup}" class="btn btn-secondary">회원가입</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
