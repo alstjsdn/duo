@@ -1,4 +1,4 @@
-package org.duo.duo.dto;
+package org.duo.duo.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

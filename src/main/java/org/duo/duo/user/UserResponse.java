@@ -1,9 +1,7 @@
-package org.duo.duo.dto;
+package org.duo.duo.user;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.duo.duo.entity.User;
-import org.duo.duo.entity.enums.Role;
 
 import java.time.LocalDateTime;
 

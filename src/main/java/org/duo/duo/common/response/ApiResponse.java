@@ -1,4 +1,4 @@
-package org.duo.duo.dto;
+package org.duo.duo.common.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

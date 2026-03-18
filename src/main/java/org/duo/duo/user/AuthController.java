@@ -1,10 +1,8 @@
-package org.duo.duo.controller;
+package org.duo.duo.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.duo.duo.dto.UserRequest;
-import org.duo.duo.exception.CustomException;
-import org.duo.duo.service.UserService;
+import org.duo.duo.common.exception.CustomException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;

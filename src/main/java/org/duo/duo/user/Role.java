@@ -1,4 +1,4 @@
-package org.duo.duo.entity.enums;
+package org.duo.duo.user;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package org.duo.duo.controller;
+package org.duo.duo;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,8 +1,8 @@
-package org.duo.duo.config.security;
+package org.duo.duo.common.security;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.duo.duo.entity.User;
+import org.duo.duo.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

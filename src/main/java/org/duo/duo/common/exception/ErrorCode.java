@@ -1,4 +1,4 @@
-package org.duo.duo.exception;
+package org.duo.duo.common.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,5 @@
-package org.duo.duo.repository;
+package org.duo.duo.user;
 
-import org.duo.duo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,8 +1,8 @@
-package org.duo.duo.config.security;
+package org.duo.duo.common.security;
 
 import lombok.RequiredArgsConstructor;
-import org.duo.duo.entity.User;
-import org.duo.duo.repository.UserRepository;
+import org.duo.duo.user.User;
+import org.duo.duo.user.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

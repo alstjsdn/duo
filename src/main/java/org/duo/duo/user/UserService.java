@@ -1,13 +1,8 @@
-package org.duo.duo.service;
+package org.duo.duo.user;
 
 import lombok.RequiredArgsConstructor;
-import org.duo.duo.dto.UserRequest;
-import org.duo.duo.dto.UserResponse;
-import org.duo.duo.entity.User;
-import org.duo.duo.entity.enums.Role;
-import org.duo.duo.exception.CustomException;
-import org.duo.duo.exception.ErrorCode;
-import org.duo.duo.repository.UserRepository;
+import org.duo.duo.common.exception.CustomException;
+import org.duo.duo.common.exception.ErrorCode;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

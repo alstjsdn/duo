@@ -1,11 +1,8 @@
-package org.duo.duo.controller.api;
+package org.duo.duo.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.duo.duo.dto.ApiResponse;
-import org.duo.duo.dto.UserRequest;
-import org.duo.duo.dto.UserResponse;
-import org.duo.duo.service.UserService;
+import org.duo.duo.common.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
