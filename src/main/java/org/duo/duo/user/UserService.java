@@ -1,7 +1,7 @@
 package org.duo.duo.user;
 
 import lombok.RequiredArgsConstructor;
-import org.duo.duo.common.exception.CustomException;
+import org.duo.duo.common.exception.UserException;
 import org.duo.duo.common.exception.ErrorCode;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class UserService {
     public UserResponse createUser(UserRequest request) {
 
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
+            throw new UserException(ErrorCode.DUPLICATE_USERNAME);
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -37,13 +37,13 @@ public class UserService {
 
     public UserResponse getUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
         return UserResponse.from(user);
     }
 
     public UserResponse getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
         return UserResponse.from(user);
     }
 }

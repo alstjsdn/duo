@@ -18,6 +18,37 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+        }
+
+        .top-nav {
+            position: fixed;
+            top: 20px;
+            right: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-nav span {
+            color: rgba(255,255,255,0.85);
+            font-size: 14px;
+        }
+
+        .top-nav a {
+            padding: 8px 18px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.4);
+            transition: background 0.2s;
+        }
+
+        .top-nav a:hover {
+            background: rgba(255,255,255,0.35);
         }
 
         .login-container {
@@ -120,6 +151,11 @@
     </style>
 </head>
 <body>
+    <nav class="top-nav">
+        <span>계정이 없으신가요?</span>
+        <a th:href="@{/signup}">회원가입</a>
+    </nav>
+
     <div class="login-container">
         <h1>Duo 로그인</h1>
 

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 등록 - Duo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 22px;
+        }
+
+        header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 14px;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 32px;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-group select,
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-group select:focus,
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            height: 300px;
+            resize: vertical;
+        }
+
+        .error-msg {
+            color: #e53e3e;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1><a th:href="@{/boards}">Duo 게시판</a></h1>
+    <div class="user-info">
+        <span sec:authentication="name"></span>님
+        <a th:href="@{/logout}">로그아웃</a>
+    </div>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2>게시글 등록</h2>
+
+        <form th:action="@{/boards/write}" th:object="${boardCreateRequest}" method="post">
+
+            <div class="form-group">
+                <label for="type">유형</label>
+                <select id="type" th:field="*{type}">
+                    <option value="">유형 선택</option>
+                    <option th:each="t : ${boardTypes}"
+                            th:value="${t.name()}"
+                            th:text="${t.name}"></option>
+                </select>
+                <p class="error-msg" th:if="${#fields.hasErrors('type')}" th:errors="*{type}"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="title">제목</label>
+                <input type="text" id="title" th:field="*{title}" placeholder="제목을 입력해주세요.">
+                <p class="error-msg" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="content">내용</label>
+                <textarea id="content" th:field="*{content}" placeholder="내용을 입력해주세요."></textarea>
+                <p class="error-msg" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
+            </div>
+
+            <div class="btn-group">
+                <a th:href="@{/boards}" class="btn btn-secondary">취소</a>
+                <button type="submit" class="btn btn-primary">등록</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

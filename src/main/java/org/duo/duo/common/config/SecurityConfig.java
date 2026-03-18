@@ -35,15 +35,16 @@ public class SecurityConfig {
                 .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/boards/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/boards/**").hasAnyRole("USER", "ADMIN")
 
-                .anyRequest().authenticated()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
             )
 
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
+                .defaultSuccessUrl("/boards", true)
                 .failureUrl("/login?error=true")
                 .permitAll()
             )

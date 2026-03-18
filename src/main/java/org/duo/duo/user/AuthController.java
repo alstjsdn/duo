@@ -2,7 +2,7 @@ package org.duo.duo.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.duo.duo.common.exception.CustomException;
+import org.duo.duo.common.exception.UserException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -47,7 +47,7 @@ public class AuthController {
         try {
             userService.createUser(userRequest);
             return "redirect:/login?signup=success";
-        } catch (CustomException e) {
+        } catch (UserException e) {
             model.addAttribute("error", e.getMessage());
             return "signup";
         }
