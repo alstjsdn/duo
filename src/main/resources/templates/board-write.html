@@ -4,160 +4,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시글 등록 - Duo</title>
+    <title>글쓰기 - Duo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f5f5;
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #fafafa;
             min-height: 100vh;
+            color: #18181b;
         }
 
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 16px 40px;
+            background: #18181b;
+            padding: 0 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 56px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        header h1 {
-            font-size: 22px;
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: -0.5px;
         }
 
-        header .user-info {
+        .logo span { color: #f97316; }
+
+        .header-nav {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
             font-size: 14px;
         }
 
-        header a {
-            color: white;
+        .header-nav span { color: #a1a1aa; }
+
+        .header-nav a {
+            color: #d4d4d8;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
+            transition: color 0.15s;
         }
 
-        header a:hover {
-            text-decoration: underline;
-        }
+        .header-nav a:hover { color: #fff; }
 
         .container {
             max-width: 800px;
-            margin: 40px auto;
+            margin: 36px auto;
             padding: 0 20px;
         }
 
-        .card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            padding: 32px;
-        }
-
-        .card h2 {
-            font-size: 20px;
-            color: #333;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .form-group {
+        .page-header {
             margin-bottom: 20px;
         }
 
+        .page-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e4e4e7;
+            border-radius: 10px;
+            padding: 32px;
+        }
+
+        .form-group { margin-bottom: 22px; }
+
         .form-group label {
             display: block;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: #555;
-            margin-bottom: 8px;
+            color: #3f3f46;
+            margin-bottom: 7px;
         }
 
         .form-group select,
         .form-group input[type="text"],
         .form-group textarea {
             width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            padding: 11px 14px;
+            border: 1.5px solid #e4e4e7;
+            border-radius: 7px;
             font-size: 14px;
             font-family: inherit;
-            transition: border-color 0.2s;
+            color: #18181b;
+            background: #fff;
+            transition: border-color 0.15s;
         }
 
         .form-group select:focus,
         .form-group input[type="text"]:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #f97316;
         }
 
         .form-group textarea {
             height: 300px;
             resize: vertical;
+            line-height: 1.7;
         }
 
         .error-msg {
-            color: #e53e3e;
-            font-size: 13px;
+            color: #be123c;
+            font-size: 12px;
             margin-top: 5px;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #f4f4f5;
+            margin: 28px 0 24px;
         }
 
         .btn-group {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            margin-top: 28px;
         }
 
         .btn {
             padding: 10px 24px;
-            border-radius: 6px;
+            border-radius: 7px;
             font-size: 14px;
             font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
             text-decoration: none;
             border: none;
-            transition: opacity 0.2s;
-        }
-
-        .btn:hover {
-            opacity: 0.85;
+            transition: all 0.15s;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #18181b;
+            color: #fff;
         }
 
+        .btn-primary:hover { background: #27272a; }
+
         .btn-secondary {
-            background: #f0f0f0;
-            color: #555;
+            background: #fff;
+            color: #52525b;
+            border: 1.5px solid #e4e4e7;
+        }
+
+        .btn-secondary:hover {
+            border-color: #a1a1aa;
+            color: #18181b;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1><a th:href="@{/boards}">Duo 게시판</a></h1>
-    <div class="user-info">
+    <a th:href="@{/boards}" class="logo">Du<span>o</span></a>
+    <nav class="header-nav">
         <span sec:authentication="name"></span>님
         <a th:href="@{/logout}">로그아웃</a>
-    </div>
+    </nav>
 </header>
 
 <div class="container">
-    <div class="card">
-        <h2>게시글 등록</h2>
+    <div class="page-header">
+        <h1>게시글 등록</h1>
+    </div>
 
+    <div class="card">
         <form th:action="@{/boards/write}" th:object="${boardCreateRequest}" method="post">
 
             <div class="form-group">
@@ -183,9 +206,11 @@
                 <p class="error-msg" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
             </div>
 
+            <hr class="divider">
+
             <div class="btn-group">
                 <a th:href="@{/boards}" class="btn btn-secondary">취소</a>
-                <button type="submit" class="btn btn-primary">등록</button>
+                <button type="submit" class="btn btn-primary">등록하기</button>
             </div>
 
         </form>

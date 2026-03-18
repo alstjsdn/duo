@@ -5,72 +5,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시판 - Duo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f5f5;
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #fafafa;
             min-height: 100vh;
+            color: #18181b;
         }
 
+        /* 헤더 */
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 16px 40px;
+            background: #18181b;
+            padding: 0 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 56px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        header h1 {
-            font-size: 22px;
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: -0.5px;
         }
 
-        header .user-info {
+        .logo span { color: #f97316; }
+
+        .header-nav {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
             font-size: 14px;
         }
 
-        header a {
-            color: white;
+        .header-nav span { color: #a1a1aa; }
+
+        .header-nav a {
+            color: #d4d4d8;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
+            transition: color 0.15s;
         }
 
-        header a:hover {
-            text-decoration: underline;
+        .header-nav a:hover { color: #fff; }
+
+        .nav-divider {
+            width: 1px;
+            height: 14px;
+            background: #3f3f46;
         }
 
+        /* 컨텐츠 */
         .container {
-            max-width: 1000px;
-            margin: 40px auto;
+            max-width: 1040px;
+            margin: 36px auto;
             padding: 0 20px;
         }
 
-        .search-box {
-            background: white;
-            padding: 20px 24px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+        .page-header {
             display: flex;
-            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #18181b;
+        }
+
+        .btn-write {
+            padding: 9px 20px;
+            background: #f97316;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+
+        .btn-write:hover { background: #ea6c0a; }
+
+        /* 검색 */
+        .search-box {
+            background: #fff;
+            border: 1px solid #e4e4e7;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .search-box select,
         .search-box input[type="text"] {
             padding: 9px 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
+            border: 1.5px solid #e4e4e7;
+            border-radius: 7px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #18181b;
+            background: #fff;
+            transition: border-color 0.15s;
             flex: 1;
             min-width: 120px;
         }
@@ -78,28 +126,29 @@
         .search-box select:focus,
         .search-box input[type="text"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #f97316;
         }
 
         .search-box button {
             padding: 9px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #18181b;
+            color: #fff;
             border: none;
-            border-radius: 5px;
-            font-size: 14px;
+            border-radius: 7px;
+            font-size: 13px;
             font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
+            transition: background 0.15s;
         }
 
-        .search-box button:hover {
-            opacity: 0.9;
-        }
+        .search-box button:hover { background: #27272a; }
 
-        .board-table {
-            background: white;
+        /* 테이블 */
+        .board-wrap {
+            background: #fff;
+            border: 1px solid #e4e4e7;
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             overflow: hidden;
         }
 
@@ -108,106 +157,137 @@
             border-collapse: collapse;
         }
 
-        thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        thead tr {
+            background: #f4f4f5;
+            border-bottom: 1px solid #e4e4e7;
         }
 
         th {
-            padding: 14px 16px;
+            padding: 12px 16px;
             text-align: left;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
+            color: #71717a;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
 
         td {
             padding: 14px 16px;
             font-size: 14px;
-            color: #333;
-            border-bottom: 1px solid #f0f0f0;
+            color: #3f3f46;
+            border-bottom: 1px solid #f4f4f5;
         }
 
-        tbody tr:last-child td {
-            border-bottom: none;
+        tbody tr:last-child td { border-bottom: none; }
+
+        tbody tr:hover { background: #fafafa; }
+
+        .title-link {
+            color: #18181b;
+            text-decoration: none;
+            font-weight: 500;
         }
 
-        tbody tr:hover {
-            background: #f9f8ff;
+        .title-link:hover { color: #f97316; }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 9px;
+            background: #fff7ed;
+            color: #c2410c;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid #fed7aa;
         }
+
+        .view-count { color: #a1a1aa; font-size: 13px; }
+        .date { color: #a1a1aa; font-size: 13px; }
+        .author { color: #52525b; }
 
         .empty {
             text-align: center;
             padding: 60px;
-            color: #999;
+            color: #a1a1aa;
+            font-size: 14px;
         }
 
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            background: #ede9ff;
-            color: #764ba2;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
+        /* 페이징 */
         .pagination {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             margin-top: 24px;
         }
 
-        .pagination a, .pagination span {
-            display: inline-block;
-            padding: 7px 13px;
-            border-radius: 5px;
-            font-size: 14px;
+        .pagination a,
+        .pagination span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 500;
             text-decoration: none;
-            border: 1px solid #ddd;
-            color: #555;
-            background: white;
+            border: 1px solid #e4e4e7;
+            color: #52525b;
+            background: #fff;
+            transition: all 0.15s;
         }
 
         .pagination a:hover {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: #f97316;
+            color: #f97316;
         }
 
         .pagination .active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: transparent;
+            background: #18181b;
+            color: #fff;
+            border-color: #18181b;
         }
 
         .pagination .disabled {
-            color: #ccc;
+            color: #d4d4d8;
             pointer-events: none;
+            background: #fafafa;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Duo 게시판</h1>
-    <div class="user-info">
-        <!-- 로그인 상태 -->
+    <a th:href="@{/boards}" class="logo">Du<span>o</span></a>
+    <nav class="header-nav">
         <div sec:authorize="isAuthenticated()">
             <span sec:authentication="name"></span>님
+        </div>
+        <div class="nav-divider"></div>
+        <div sec:authorize="isAuthenticated()">
             <a th:href="@{/logout}">로그아웃</a>
         </div>
-        <!-- 비로그인 상태 -->
         <div sec:authorize="!isAuthenticated()">
             <a th:href="@{/login}">로그인</a>
+        </div>
+        <div sec:authorize="!isAuthenticated()">
+            <div class="nav-divider"></div>
             <a th:href="@{/signup}">회원가입</a>
         </div>
-    </div>
+    </nav>
 </header>
 
 <div class="container">
 
-    <!-- 검색 폼 -->
+    <div class="page-header">
+        <h1 class="page-title">게시판</h1>
+        <a th:href="@{/boards/write}" class="btn-write"
+           sec:authorize="isAuthenticated()">+ 글쓰기</a>
+    </div>
+
+    <!-- 검색 -->
     <form th:action="@{/boards}" method="get" class="search-box">
         <select name="type">
             <option value="" th:selected="${search.type == null}">전체 유형</option>
@@ -221,26 +301,17 @@
         <button type="submit">검색</button>
     </form>
 
-    <!-- 글쓰기 버튼 -->
-    <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
-        <a th:href="@{/boards/write}"
-           style="padding: 9px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                  color: white; text-decoration: none; border-radius: 5px; font-size: 14px; font-weight: 600;">
-            글쓰기
-        </a>
-    </div>
-
-    <!-- 게시글 목록 -->
-    <div class="board-table">
+    <!-- 목록 -->
+    <div class="board-wrap">
         <table>
             <thead>
                 <tr>
-                    <th style="width: 60px">번호</th>
-                    <th style="width: 80px">유형</th>
+                    <th style="width:60px">번호</th>
+                    <th style="width:90px">유형</th>
                     <th>제목</th>
-                    <th style="width: 120px">작성자</th>
-                    <th style="width: 80px">조회수</th>
-                    <th style="width: 150px">작성일</th>
+                    <th style="width:110px">작성자</th>
+                    <th style="width:70px">조회</th>
+                    <th style="width:140px">작성일</th>
                 </tr>
             </thead>
             <tbody>
@@ -248,16 +319,16 @@
                     <td colspan="6" class="empty">게시글이 없습니다.</td>
                 </tr>
                 <tr th:each="board : ${boards}">
-                    <td th:text="${board.boardId}"></td>
+                    <td th:text="${board.boardId}" style="color:#a1a1aa; font-size:13px;"></td>
                     <td><span class="badge" th:text="${board.type}"></span></td>
                     <td>
                         <a th:href="@{/boards/{id}(id=${board.boardId})}"
-                           style="color: #333; text-decoration: none; font-weight: 500;"
+                           class="title-link"
                            th:text="${board.title}"></a>
                     </td>
-                    <td th:text="${board.author}"></td>
-                    <td th:text="${board.viewCount}"></td>
-                    <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td class="author" th:text="${board.author}"></td>
+                    <td class="view-count" th:text="${board.viewCount}"></td>
+                    <td class="date" th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
                 </tr>
             </tbody>
         </table>
@@ -266,7 +337,7 @@
     <!-- 페이징 -->
     <div class="pagination" th:if="${boards.totalPages > 0}">
         <a th:classappend="${boards.first} ? 'disabled'"
-           th:href="@{/boards(page=${boards.number - 1}, type=${search.type}, title=${search.title}, content=${search.content})}">&laquo;</a>
+           th:href="@{/boards(page=${boards.number - 1}, type=${search.type}, title=${search.title}, content=${search.content})}">&lsaquo;</a>
 
         <th:block th:each="i : ${#numbers.sequence(0, boards.totalPages - 1)}">
             <a th:if="${i != boards.number}"
@@ -276,10 +347,9 @@
         </th:block>
 
         <a th:classappend="${boards.last} ? 'disabled'"
-           th:href="@{/boards(page=${boards.number + 1}, type=${search.type}, title=${search.title}, content=${search.content})}">&raquo;</a>
+           th:href="@{/boards(page=${boards.number + 1}, type=${search.type}, title=${search.title}, content=${search.content})}">&rsaquo;</a>
     </div>
 
 </div>
-
 </body>
 </html>

@@ -4,159 +4,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${board.title} + ' - Duo'">게시글 상세 - Duo</title>
+    <title th:text="${board.title} + ' - Duo'">게시글 - Duo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f5f5;
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #fafafa;
             min-height: 100vh;
+            color: #18181b;
         }
 
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 16px 40px;
+            background: #18181b;
+            padding: 0 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 56px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        header h1 {
-            font-size: 22px;
-        }
-
-        header h1 a {
-            color: white;
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
             text-decoration: none;
+            letter-spacing: -0.5px;
         }
 
-        header .user-info {
+        .logo span { color: #f97316; }
+
+        .header-nav {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
             font-size: 14px;
         }
 
-        header a {
-            color: white;
+        .header-nav span { color: #a1a1aa; }
+
+        .header-nav a {
+            color: #d4d4d8;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
+            transition: color 0.15s;
         }
 
-        header a:hover {
-            text-decoration: underline;
+        .header-nav a:hover { color: #fff; }
+
+        .nav-divider {
+            width: 1px;
+            height: 14px;
+            background: #3f3f46;
         }
 
         .container {
-            max-width: 1000px;
-            margin: 40px auto;
+            max-width: 800px;
+            margin: 36px auto;
             padding: 0 20px;
         }
 
+        /* 글 카드 */
         .post-card {
-            background: white;
+            background: #fff;
+            border: 1px solid #e4e4e7;
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             overflow: hidden;
         }
 
         .post-header {
-            padding: 28px 32px 20px;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 28px 32px 22px;
+            border-bottom: 1px solid #f4f4f5;
         }
 
         .post-badge {
             display: inline-block;
-            padding: 3px 10px;
-            background: #ede9ff;
-            color: #764ba2;
-            border-radius: 10px;
-            font-size: 12px;
+            padding: 2px 10px;
+            background: #fff7ed;
+            color: #c2410c;
+            border-radius: 20px;
+            font-size: 11px;
             font-weight: 600;
-            margin-bottom: 12px;
+            border: 1px solid #fed7aa;
+            margin-bottom: 14px;
         }
 
         .post-title {
             font-size: 22px;
             font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 14px;
+            color: #18181b;
             line-height: 1.4;
+            margin-bottom: 16px;
         }
 
         .post-meta {
             display: flex;
-            gap: 20px;
+            gap: 0;
             font-size: 13px;
-            color: #888;
+            color: #a1a1aa;
         }
 
-        .post-meta span strong {
-            color: #555;
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
+
+        .meta-item:not(:last-child)::after {
+            content: '·';
+            margin: 0 10px;
+            color: #d4d4d8;
+        }
+
+        .meta-label { color: #71717a; }
+        .meta-value { color: #3f3f46; font-weight: 500; }
 
         .post-body {
             padding: 32px;
             font-size: 15px;
-            color: #333;
-            line-height: 1.8;
+            color: #27272a;
+            line-height: 1.9;
             min-height: 200px;
             white-space: pre-wrap;
         }
 
+        /* 하단 버튼 */
         .post-footer {
             padding: 16px 32px;
-            border-top: 1px solid #f0f0f0;
+            border-top: 1px solid #f4f4f5;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: #fafafa;
         }
 
         .btn {
             padding: 9px 20px;
-            border-radius: 5px;
-            font-size: 14px;
+            border-radius: 7px;
+            font-size: 13px;
             font-weight: 600;
+            font-family: inherit;
             text-decoration: none;
             cursor: pointer;
             border: none;
+            transition: all 0.15s;
         }
 
         .btn-back {
-            background: #f0f0f0;
-            color: #555;
+            background: #fff;
+            color: #52525b;
+            border: 1.5px solid #e4e4e7;
         }
 
         .btn-back:hover {
-            background: #e0e0e0;
+            border-color: #a1a1aa;
+            color: #18181b;
         }
 
         .btn-edit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #18181b;
+            color: #fff;
         }
 
-        .btn-edit:hover {
-            opacity: 0.9;
-        }
+        .btn-edit:hover { background: #27272a; }
 
         .btn-delete {
-            background: #ff4d4f;
-            color: white;
-            margin-left: 8px;
+            background: #fff;
+            color: #be123c;
+            border: 1.5px solid #fecdd3;
         }
 
         .btn-delete:hover {
-            background: #e03e40;
+            background: #fff1f2;
         }
 
-        .action-buttons {
+        .action-btns {
             display: flex;
             gap: 8px;
         }
@@ -165,17 +192,23 @@
 <body>
 
 <header>
-    <h1><a th:href="@{/boards}">Duo 게시판</a></h1>
-    <div class="user-info">
+    <a th:href="@{/boards}" class="logo">Du<span>o</span></a>
+    <nav class="header-nav">
         <div sec:authorize="isAuthenticated()">
             <span sec:authentication="name"></span>님
+        </div>
+        <div class="nav-divider"></div>
+        <div sec:authorize="isAuthenticated()">
             <a th:href="@{/logout}">로그아웃</a>
         </div>
         <div sec:authorize="!isAuthenticated()">
             <a th:href="@{/login}">로그인</a>
+        </div>
+        <div sec:authorize="!isAuthenticated()">
+            <div class="nav-divider"></div>
             <a th:href="@{/signup}">회원가입</a>
         </div>
-    </div>
+    </nav>
 </header>
 
 <div class="container">
@@ -185,22 +218,31 @@
             <div class="post-badge" th:text="${board.type}"></div>
             <div class="post-title" th:text="${board.title}"></div>
             <div class="post-meta">
-                <span><strong>작성자</strong> &nbsp;<span th:text="${board.author}"></span></span>
-                <span><strong>작성일</strong> &nbsp;<span th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}"></span></span>
-                <span><strong>조회수</strong> &nbsp;<span th:text="${board.viewCount}"></span></span>
+                <div class="meta-item">
+                    <span class="meta-label">작성자</span>
+                    <span class="meta-value" th:text="${board.author}"></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">작성일</span>
+                    <span class="meta-value" th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">조회</span>
+                    <span class="meta-value" th:text="${board.viewCount}"></span>
+                </div>
             </div>
         </div>
 
         <div class="post-body" th:text="${board.content}"></div>
 
         <div class="post-footer">
-            <a th:href="@{/boards}" class="btn btn-back">목록으로</a>
-            <div class="action-buttons" sec:authorize="isAuthenticated()">
+            <a th:href="@{/boards}" class="btn btn-back">← 목록으로</a>
+            <div class="action-btns" sec:authorize="isAuthenticated()">
                 <a th:href="@{/boards/{id}/edit(id=${board.boardId})}" class="btn btn-edit">수정</a>
                 <form th:action="@{/boards/{id}/delete(id=${board.boardId})}" method="post" style="display:inline;">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <button type="submit" class="btn btn-delete"
-                            onclick="return confirm('삭제하시겠습니까?')">삭제</button>
+                            onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
                 </form>
             </div>
         </div>
