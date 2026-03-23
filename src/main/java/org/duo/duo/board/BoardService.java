@@ -2,10 +2,12 @@ package org.duo.duo.board;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.duo.duo.user.Role;
 import org.duo.duo.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +29,8 @@ public class BoardService {
     }
 
     @Transactional
-    public void create(BoardCreateRequest request, User user) {
-        Board board = Board.builder()
-                .user(user)
-                .type(request.getType())
-                .title(request.getTitle())
-                .content(request.getContent())
-                .build();
+    public void create(BoardRequest request, User user) {
+        Board board = Board.toEntity(request, user);
         boardRepository.save(board);
     }
 
@@ -45,4 +42,29 @@ public class BoardService {
         return BoardResponse.from(board);
     }
 
+    public BoardResponse get(Long id) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        return BoardResponse.from(board);
+    }
+
+    @Transactional
+    public void update(Long id, BoardRequest request, User user) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        if (!board.getUser().getUserId().equals(user.getUserId()) && user.getRole() != Role.ADMIN) {
+            throw new AccessDeniedException("수정 권한이 없습니다.");
+        }
+        board.update(request);
+    }
+
+    @Transactional
+    public void delete(Long id, User user) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        if (!board.getUser().getUserId().equals(user.getUserId()) && user.getRole() != Role.ADMIN) {
+            throw new AccessDeniedException("삭제 권한이 없습니다.");
+        }
+        boardRepository.delete(board);
+    }
 }

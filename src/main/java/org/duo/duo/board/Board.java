@@ -17,34 +17,45 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class Board {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
     @Column(nullable = false)
     private BoardType type;
-
     @Column(nullable = false)
     private String title;
-
     @Column(nullable = false)
     private String content;
-
     @Column
     private int viewCount;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     public void increaseViewCount() {
         this.viewCount++;
     }
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
+    public void update(BoardRequest request) {
+        this.type = request.getType();
+        this.title = request.getTitle();
+        this.content = request.getContent();
+    }
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    public static Board toEntity(BoardRequest request, User user) {
+        return Board.builder()
+                .user(user)
+                .type(request.getType())
+                .title(request.getTitle())
+                .content(request.getContent())
+                .viewCount(0)
+                .build();
+    }
 }

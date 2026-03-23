@@ -187,6 +187,60 @@
             display: flex;
             gap: 8px;
         }
+
+        /* 댓글 */
+        .comment-section {
+            margin-top: 24px;
+        }
+
+        .comment-form {
+            background: #fff;
+            border: 1px solid #e4e4e7;
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            min-height: 80px;
+            border: 1px solid #e4e4e7;
+            border-radius: 7px;
+            padding: 10px 14px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .comment-form textarea:focus { border-color: #a1a1aa; }
+
+        .comment-form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .comment-error {
+            font-size: 13px;
+            color: #be123c;
+        }
+
+        .btn-comment {
+            background: #18181b;
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-comment:hover { background: #27272a; }
     </style>
 </head>
 <body>
@@ -237,7 +291,8 @@
 
         <div class="post-footer">
             <a th:href="@{/boards}" class="btn btn-back">← 목록으로</a>
-            <div class="action-btns" sec:authorize="isAuthenticated()">
+            <div class="action-btns"
+                 th:if="${board.username == #authentication?.name or #authentication?.authorities.![authority].contains('ROLE_ADMIN')}">
                 <a th:href="@{/boards/{id}/edit(id=${board.boardId})}" class="btn btn-edit">수정</a>
                 <form th:action="@{/boards/{id}/delete(id=${board.boardId})}" method="post" style="display:inline;">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
@@ -247,6 +302,17 @@
             </div>
         </div>
 
+    </div>
+    <div class="comment-section" sec:authorize="isAuthenticated()">
+        <form class="comment-form" th:action="@{/boards/{id}/comments/write(id=${board.boardId})}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <textarea name="content" placeholder="댓글을 입력하세요."></textarea>
+            <div class="comment-form-footer">
+                <span class="comment-error" th:if="${commentError}" th:text="${commentError}"></span>
+                <span th:unless="${commentError}"></span>
+                <button type="submit" class="btn-comment">댓글 등록</button>
+            </div>
+        </form>
     </div>
 </div>
 

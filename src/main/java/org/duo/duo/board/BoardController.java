@@ -35,13 +35,13 @@ public class BoardController {
 
     @GetMapping("/write")
     public String write(Model model) {
-        model.addAttribute("boardCreateRequest", new BoardCreateRequest());
+        model.addAttribute("boardRequest", new BoardRequest());
         model.addAttribute("boardTypes", BoardType.values());
         return "board-write";
     }
 
     @PostMapping("/write")
-    public String create(@Valid @ModelAttribute BoardCreateRequest boardCreateRequest,
+    public String create(@Valid @ModelAttribute BoardRequest boardRequest,
                          BindingResult bindingResult,
                          @AuthenticationPrincipal UserPrincipal principal,
                          Model model) {
@@ -49,7 +49,7 @@ public class BoardController {
             model.addAttribute("boardTypes", BoardType.values());
             return "board-write";
         }
-        boardService.create(boardCreateRequest, principal.getUser());
+        boardService.create(boardRequest, principal.getUser());
         return "redirect:/boards";
     }
 
@@ -58,5 +58,35 @@ public class BoardController {
         BoardResponse board = boardService.view(id);
         model.addAttribute("board", board);
         return "board-detail";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String editForm(@PathVariable Long id, Model model) {
+        model.addAttribute("boardId", id);
+        model.addAttribute("boardRequest", BoardRequest.from(boardService.get(id)));
+        model.addAttribute("boardTypes", BoardType.values());
+        return "board-edit";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String update(@PathVariable Long id,
+                         @Valid @ModelAttribute BoardRequest boardRequest,
+                         BindingResult bindingResult,
+                         @AuthenticationPrincipal UserPrincipal principal,
+                         Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("boardId", id);
+            model.addAttribute("boardTypes", BoardType.values());
+            return "board-edit";
+        }
+        boardService.update(id, boardRequest, principal.getUser());
+        return "redirect:/boards/" + id;
+    }
+
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id,
+                         @AuthenticationPrincipal UserPrincipal principal) {
+        boardService.delete(id, principal.getUser());
+        return "redirect:/boards";
     }
 }

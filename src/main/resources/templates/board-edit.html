@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>글쓰기 - Duo</title>
+    <title>게시글 수정 - Duo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -177,11 +177,11 @@
 
 <div class="container">
     <div class="page-header">
-        <h1>게시글 등록</h1>
+        <h1>게시글 수정</h1>
     </div>
 
     <div class="card">
-        <form th:action="@{/boards/write}" th:object="${boardRequest}" method="post">
+        <form th:action="@{/boards/{id}/edit(id=${boardId})}" th:object="${boardRequest}" method="post">
 
             <div class="form-group">
                 <label for="type">유형</label>
@@ -209,8 +209,8 @@
             <hr class="divider">
 
             <div class="btn-group">
-                <a th:href="@{/boards}" class="btn btn-secondary">취소</a>
-                <button type="submit" class="btn btn-primary">등록하기</button>
+                <a th:href="@{/boards/{id}(id=${boardId})}" class="btn btn-secondary">취소</a>
+                <button type="submit" class="btn btn-primary">수정하기</button>
             </div>
 
         </form>

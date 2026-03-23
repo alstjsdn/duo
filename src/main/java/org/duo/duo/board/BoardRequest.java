@@ -5,12 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.duo.duo.user.User;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class BoardCreateRequest {
+public class BoardRequest {
 
     @NotNull(message = "게시판 유형을 선택해주세요.")
     private BoardType type;
@@ -21,13 +20,11 @@ public class BoardCreateRequest {
     @NotBlank(message = "내용을 입력해주세요.")
     private String content;
 
-    public Board toEntity(User user) {
-        return Board.builder()
-                .user(user)
-                .type(this.type)
-                .title(this.title)
-                .content(this.content)
-                .viewCount(0)
-                .build();
+    public static BoardRequest from(BoardResponse board) {
+        BoardRequest request = new BoardRequest();
+        request.type = board.getType();
+        request.title = board.getTitle();
+        request.content = board.getContent();
+        return request;
     }
 }
