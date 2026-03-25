@@ -2,6 +2,7 @@ package org.duo.duo.board;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.duo.duo.board.comment.CommentService;
 import org.duo.duo.common.constants.PageConstants;
 import org.duo.duo.common.security.UserPrincipal;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
 
     private final BoardService boardService;
+    private final CommentService commentService;
 
     @GetMapping
     public String list(@ModelAttribute BoardSearchRequest request,
@@ -54,9 +56,13 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model) {
+    public String detail(@PathVariable Long id,
+                         @RequestParam(defaultValue = PageConstants.DEFAULT_PAGE) int commentPage,
+                         Model model) {
         BoardResponse board = boardService.view(id);
+        PageRequest pageable = PageConstants.of(commentPage, Sort.by("createdAt").ascending());
         model.addAttribute("board", board);
+        model.addAttribute("comments", commentService.findByBoardId(id, pageable));
         return "board-detail";
     }
 
@@ -74,6 +80,7 @@ public class BoardController {
                          BindingResult bindingResult,
                          @AuthenticationPrincipal UserPrincipal principal,
                          Model model) {
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("boardId", id);
             model.addAttribute("boardTypes", BoardType.values());

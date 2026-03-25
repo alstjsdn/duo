@@ -9,7 +9,10 @@ import org.duo.duo.user.User;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import org.duo.duo.board.comment.Comment;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Entity
 @Getter
@@ -32,6 +35,10 @@ public class Board {
     private String content;
     @Column
     private int viewCount;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private java.util.List<Comment> comments = new ArrayList<>();
 
     @CreationTimestamp
     @Column(updatable = false)

@@ -241,6 +241,187 @@
         }
 
         .btn-comment:hover { background: #27272a; }
+
+        /* 댓글 목록 */
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .comment-item {
+            background: #fff;
+            border: 1px solid #e4e4e7;
+            border-radius: 10px;
+            padding: 16px 20px;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .comment-author {
+            font-size: 13px;
+            font-weight: 600;
+            color: #3f3f46;
+        }
+
+        .comment-date {
+            font-size: 12px;
+            color: #a1a1aa;
+        }
+
+        .comment-content {
+            font-size: 14px;
+            color: #27272a;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .btn-comment-edit {
+            background: #fff;
+            color: #52525b;
+            border: 1.5px solid #e4e4e7;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-comment-edit:hover {
+            border-color: #a1a1aa;
+            color: #18181b;
+        }
+
+        .btn-comment-delete {
+            background: #fff;
+            color: #be123c;
+            border: 1.5px solid #fecdd3;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-comment-delete:hover { background: #fff1f2; }
+
+        .comment-edit-form {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .comment-edit-form textarea {
+            width: 100%;
+            min-height: 70px;
+            border: 1px solid #e4e4e7;
+            border-radius: 7px;
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .comment-edit-form textarea:focus { border-color: #a1a1aa; }
+
+        .comment-edit-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .btn-cancel {
+            background: #fff;
+            color: #52525b;
+            border: 1.5px solid #e4e4e7;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background: #18181b;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .btn-save:hover { background: #27272a; }
+
+        .comment-count {
+            font-size: 14px;
+            font-weight: 600;
+            color: #3f3f46;
+            margin-bottom: 12px;
+        }
+
+        /* 댓글 페이지네이션 */
+        .comment-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            margin: 16px 0;
+        }
+
+        .comment-pagination a,
+        .comment-pagination span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1.5px solid #e4e4e7;
+            color: #52525b;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .comment-pagination a:hover {
+            border-color: #f97316;
+            color: #f97316;
+        }
+
+        .comment-pagination .active {
+            background: #18181b;
+            color: #fff;
+            border-color: #18181b;
+        }
+
+        .comment-pagination .disabled {
+            color: #d4d4d8;
+            pointer-events: none;
+            background: #fafafa;
+        }
     </style>
 </head>
 <body>
@@ -303,17 +484,98 @@
         </div>
 
     </div>
-    <div class="comment-section" sec:authorize="isAuthenticated()">
-        <form class="comment-form" th:action="@{/boards/{id}/comments/write(id=${board.boardId})}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <textarea name="content" placeholder="댓글을 입력하세요."></textarea>
-            <div class="comment-form-footer">
-                <span class="comment-error" th:if="${commentError}" th:text="${commentError}"></span>
-                <span th:unless="${commentError}"></span>
-                <button type="submit" class="btn-comment">댓글 등록</button>
+    <div class="comment-section">
+        <!-- 댓글 목록 -->
+        <div th:if="${comments.totalElements > 0}">
+            <div class="comment-count" th:text="'댓글 ' + ${comments.totalElements} + '개'"></div>
+            <div class="comment-list">
+                <div class="comment-item" th:each="comment : ${comments.content}" th:id="'comment-' + ${comment.commentId}">
+                    <div class="comment-header">
+                        <span class="comment-author" th:text="${comment.author}"></span>
+                        <span class="comment-date" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                    </div>
+                    <div class="comment-content" th:id="'content-' + ${comment.commentId}" th:text="${comment.content}"></div>
+
+                    <!-- 수정/삭제 버튼: 본인 또는 관리자만 표시 -->
+                    <div class="comment-actions"
+                         th:if="${comment.username == #authentication?.name or #authentication?.authorities.![authority].contains('ROLE_ADMIN')}">
+                        <button type="button" class="btn-comment-edit"
+                                th:onclick="'toggleEdit(' + ${comment.commentId} + ')'">수정</button>
+                        <form th:action="@{/boards/{boardId}/comments/{commentId}/delete(boardId=${board.boardId}, commentId=${comment.commentId})}"
+                              method="post" style="display:inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit" class="btn-comment-delete"
+                                    onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</button>
+                        </form>
+                    </div>
+
+                    <!-- 인라인 수정 폼 -->
+                    <div class="comment-edit-form" th:id="'edit-form-' + ${comment.commentId}"
+                         th:if="${comment.username == #authentication?.name or #authentication?.authorities.![authority].contains('ROLE_ADMIN')}">
+                        <form th:action="@{/boards/{boardId}/comments/{commentId}/edit(boardId=${board.boardId}, commentId=${comment.commentId})}"
+                              method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <textarea name="content" th:text="${comment.content}"></textarea>
+                            <div class="comment-edit-footer">
+                                <button type="button" class="btn-cancel"
+                                        th:onclick="'cancelEdit(' + ${comment.commentId} + ')'">취소</button>
+                                <button type="submit" class="btn-save">저장</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </form>
+
+            <!-- 댓글 페이지네이션 -->
+            <div class="comment-pagination" th:if="${comments.totalPages > 1}">
+                <a th:classappend="${comments.first} ? 'disabled'"
+                   th:href="@{/boards/{id}(id=${board.boardId}, commentPage=${comments.number - 1})}">&lsaquo;</a>
+
+                <th:block th:each="i : ${#numbers.sequence(0, comments.totalPages - 1)}">
+                    <span th:if="${i == comments.number}" class="active" th:text="${i + 1}"></span>
+                    <a th:unless="${i == comments.number}"
+                       th:href="@{/boards/{id}(id=${board.boardId}, commentPage=${i})}"
+                       th:text="${i + 1}"></a>
+                </th:block>
+
+                <a th:classappend="${comments.last} ? 'disabled'"
+                   th:href="@{/boards/{id}(id=${board.boardId}, commentPage=${comments.number + 1})}">&rsaquo;</a>
+            </div>
+        </div>
+
+        <!-- 댓글 작성 폼 -->
+        <div sec:authorize="isAuthenticated()">
+            <form class="comment-form" th:action="@{/boards/{id}/comments/write(id=${board.boardId})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <textarea name="content" placeholder="댓글을 입력하세요."></textarea>
+                <div class="comment-form-footer">
+                    <span class="comment-error" th:if="${commentError}" th:text="${commentError}"></span>
+                    <span th:unless="${commentError}"></span>
+                    <button type="submit" class="btn-comment">댓글 등록</button>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <script>
+        function toggleEdit(commentId) {
+            const editForm = document.getElementById('edit-form-' + commentId);
+            const content = document.getElementById('content-' + commentId);
+            const actions = editForm.previousElementSibling;
+            editForm.style.display = 'block';
+            content.style.display = 'none';
+            actions.style.display = 'none';
+        }
+
+        function cancelEdit(commentId) {
+            const editForm = document.getElementById('edit-form-' + commentId);
+            const content = document.getElementById('content-' + commentId);
+            const actions = editForm.previousElementSibling;
+            editForm.style.display = 'none';
+            content.style.display = '';
+            actions.style.display = '';
+        }
+    </script>
 </div>
 
 </body>
