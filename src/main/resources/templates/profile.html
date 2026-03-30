@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지 - Duo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 56px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1f2937;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span { color: #818cf8; }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        .header-nav span { color: #9ca3af; }
+
+        .header-nav a {
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.15s;
+        }
+
+        .header-nav a:hover { color: #1f2937; }
+
+        .nav-divider {
+            width: 1px;
+            height: 14px;
+            background: #e5e7eb;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 프로필 히어로 */
+        .profile-hero {
+            background: #fafaff;
+            border: 1px solid #e8e5f3;
+            border-radius: 16px;
+            padding: 36px 40px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(129,140,248,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .profile-avatar {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #818cf8, #6366f1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 3px rgba(129,140,248,0.2);
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar:hover::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            border-radius: 50%;
+        }
+
+        .profile-info { flex: 1; }
+
+        .profile-bio {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .btn-edit-profile {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: #ffffff;
+            border: 1.5px solid #e5e7eb;
+            color: #6b7280;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+            z-index: 1;
+        }
+
+        .btn-edit-profile:hover { border-color: #818cf8; color: #1f2937; }
+
+        /* 프로필 수정 모달 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 32px;
+            width: 420px;
+            max-width: 90vw;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+
+        .modal-field {
+            margin-bottom: 16px;
+        }
+
+        .modal-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .modal-field textarea {
+            width: 100%;
+            padding: 10px 13px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 9px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #1f2937;
+            background: #fafaff;
+            outline: none;
+            transition: border-color 0.15s;
+            resize: vertical;
+        }
+
+        .file-upload {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-upload-input { display: none; }
+
+        .file-upload-btn {
+            background: #ffffff;
+            border: 1.5px solid #e5e7eb;
+            color: #6b7280;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .file-upload-btn:hover { border-color: #818cf8; color: #1f2937; }
+
+        .file-upload-name {
+            font-size: 13px;
+            color: #9ca3af;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-upload-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #e8e5f3;
+            display: none;
+        }
+
+        .file-upload-preview.active { display: block; }
+
+        .modal-field textarea:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(129,140,248,0.12);
+        }
+
+        .modal-field textarea { min-height: 80px; }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .btn-modal-cancel {
+            background: #fff;
+            border: 1.5px solid #e5e7eb;
+            color: #6b7280;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .btn-modal-save {
+            background: #818cf8;
+            border: none;
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .btn-modal-save:hover { background: #7070f0; }
+
+        .profile-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 6px;
+        }
+
+        .riot-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(129,140,248,0.08);
+            border: 1px solid rgba(129,140,248,0.2);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 13px;
+            color: #6366f1;
+            font-weight: 600;
+        }
+
+        /* 랭크 카드 */
+        .rank-card {
+            background: #fafaff;
+            border: 1px solid #e8e5f3;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .rank-emblem {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            flex-shrink: 0;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.1));
+        }
+
+        .rank-info {
+            flex: 1;
+        }
+
+        .rank-tier {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .rank-lp {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6366f1;
+            margin-bottom: 6px;
+        }
+
+        .rank-record {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .rank-record .wins { color: #2563eb; font-weight: 600; }
+        .rank-record .losses { color: #dc2626; font-weight: 600; }
+        .rank-record .winrate { color: #4b5563; font-weight: 600; }
+
+        .rank-card.unranked {
+            justify-content: center;
+            padding: 28px;
+        }
+
+        .rank-card.unranked .rank-tier {
+            color: #9ca3af;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* 섹션 */
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .section-count {
+            font-size: 12px;
+            color: #6b7280;
+            background: #f0eeff;
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid #e8e5f3;
+        }
+
+        /* 리스트 공통 */
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .list-item {
+            background: #fafaff;
+            border: 1px solid #e8e5f3;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: background 0.15s, border-color 0.15s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .list-item:hover {
+            border-color: rgba(129,140,248,0.3);
+            background: rgba(129,140,248,0.04);
+        }
+
+        .list-item-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .list-item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .list-item-meta {
+            font-size: 12px;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .list-item-content {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .type-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(129,140,248,0.1);
+            color: #6366f1;
+            flex-shrink: 0;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+            font-size: 14px;
+            background: #fafaff;
+            border: 1px solid #e8e5f3;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<header th:replace="~{fragments/header :: header}"></header>
+
+<div class="container">
+
+    <!-- 프로필 히어로 -->
+    <div class="profile-hero">
+        <button type="button" class="btn-edit-profile" onclick="openModal()">프로필 수정</button>
+        <div class="profile-avatar" th:if="${user.profileImage != null}">
+            <img th:src="${user.profileImage}" alt="프로필">
+        </div>
+        <div class="profile-avatar" th:unless="${user.profileImage != null}"
+             th:text="${#strings.substring(user.name, 0, 1)}"></div>
+        <div class="profile-info">
+            <div class="profile-name" th:text="${user.name}"></div>
+            <div class="riot-badge" th:if="${user.riotId != null}">
+                <span>⚔</span>
+                <span th:text="${user.riotId + ' #' + user.riotTag}"></span>
+            </div>
+            <div class="profile-bio" th:if="${user.bio != null}" th:text="${user.bio}"></div>
+        </div>
+    </div>
+
+    <!-- 랭크 카드 -->
+    <div class="rank-card" th:if="${rank != null}">
+        <img class="rank-emblem"
+             th:src="'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/' + ${rank.tier.toLowerCase()} + '.svg'"
+             th:alt="${rank.tier}">
+        <div class="rank-info">
+            <div class="rank-tier" th:text="${rank.tier + ' ' + rank.rank}"></div>
+            <div class="rank-lp" th:text="${rank.leaguePoints + ' LP'}"></div>
+            <div class="rank-record">
+                <span class="wins" th:text="${rank.wins + '승'}"></span>
+                <span> </span>
+                <span class="losses" th:text="${rank.losses + '패'}"></span>
+                <span> · </span>
+                <span class="winrate" th:text="${#numbers.formatDecimal(rank.wins * 100.0 / (rank.wins + rank.losses), 1, 0)} + '%'"></span>
+            </div>
+        </div>
+    </div>
+    <div class="rank-card unranked" th:if="${rank == null && user.riotId != null}">
+        <img class="rank-emblem" src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/unranked.svg" alt="Unranked">
+        <div class="rank-info">
+            <div class="rank-tier">Unranked</div>
+        </div>
+    </div>
+
+    <!-- 최근 작성글 -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">최근 작성글</div>
+            <div class="section-count" th:text="${boards.totalElements} + '개'"></div>
+        </div>
+
+        <div th:if="${boards.totalElements == 0}" class="empty">작성한 게시글이 없습니다.</div>
+
+        <div class="list" th:unless="${boards.totalElements == 0}">
+            <a th:each="board : ${boards.content}" class="list-item"
+               th:href="@{/boards/{id}(id=${board.boardId})}">
+                <div class="list-item-main">
+                    <div class="list-item-title" th:text="${board.title}"></div>
+                    <div class="list-item-meta">
+                        <span th:text="${board.type.name}"></span>
+                        <span th:text="${#temporals.format(board.createdAt, 'yyyy.MM.dd HH:mm')}"></span>
+                        <span th:text="'조회 ' + ${board.viewCount}"></span>
+                    </div>
+                </div>
+                <div class="type-badge" th:text="${board.type.name}"></div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 최근 댓글 -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">최근 댓글</div>
+            <div class="section-count" th:text="${comments.totalElements} + '개'"></div>
+        </div>
+
+        <div th:if="${comments.totalElements == 0}" class="empty">작성한 댓글이 없습니다.</div>
+
+        <div class="list" th:unless="${comments.totalElements == 0}">
+            <a th:each="comment : ${comments.content}" class="list-item"
+               th:href="@{/boards/{id}(id=${comment.boardId})}">
+                <div class="list-item-main">
+                    <div class="list-item-content" th:text="${comment.content}"></div>
+                    <div class="list-item-meta">
+                        <span th:text="${comment.boardTitle}"></span>
+                        <span th:text="${#temporals.format(comment.createdAt, 'yyyy.MM.dd HH:mm')}"></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<!-- 프로필 수정 모달 -->
+<div class="modal-overlay" id="profileModal">
+    <div class="modal">
+        <div class="modal-title">프로필 수정</div>
+        <form th:action="@{/profile/edit}" method="post" enctype="multipart/form-data">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <div class="modal-field">
+                <label>프로필 이미지</label>
+                <div class="file-upload">
+                    <img class="file-upload-preview" id="imagePreview"
+                         th:if="${user.profileImage != null}" th:src="${user.profileImage}"
+                         style="display:block;">
+                    <img class="file-upload-preview" id="imagePreviewNew">
+                    <button type="button" class="file-upload-btn" onclick="document.getElementById('fileInput').click()">사진 선택</button>
+                    <span class="file-upload-name" id="fileName">선택된 파일 없음</span>
+                    <input type="file" name="profileImage" accept="image/*" id="fileInput" class="file-upload-input"
+                           onchange="handleFileSelect(this)">
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>자기소개</label>
+                <textarea name="bio" maxlength="200" placeholder="자기소개를 입력하세요."
+                          th:text="${user.bio}"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-cancel" onclick="closeModal()">취소</button>
+                <button type="submit" class="btn-modal-save">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal() {
+        document.getElementById('profileModal').classList.add('active');
+    }
+    function closeModal() {
+        document.getElementById('profileModal').classList.remove('active');
+    }
+    document.getElementById('profileModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+    function handleFileSelect(input) {
+        var nameEl = document.getElementById('fileName');
+        var previewNew = document.getElementById('imagePreviewNew');
+        var previewOld = document.getElementById('imagePreview');
+        if (input.files && input.files[0]) {
+            nameEl.textContent = input.files[0].name;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                previewNew.src = e.target.result;
+                previewNew.classList.add('active');
+                if (previewOld) previewOld.style.display = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            nameEl.textContent = '선택된 파일 없음';
+            previewNew.classList.remove('active');
+            if (previewOld) previewOld.style.display = 'block';
+        }
+    }
+</script>
+
+</body>
+</html>

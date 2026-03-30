@@ -9,6 +9,8 @@ public class BoardResponse {
     private Long boardId;
     private String username;
     private String author;
+    private String profileImage;
+    private String bio;
     private BoardType type;
     private String title;
     private String content;
@@ -20,6 +22,8 @@ public class BoardResponse {
         response.boardId = board.getBoardId();
         response.username = board.getUser().getUsername();
         response.author = board.getUser().getName();
+        response.profileImage = board.getUser().getProfileImage();
+        response.bio = board.getUser().getBio();
         response.type = board.getType();
         response.title = board.getTitle();
         response.content = board.getContent();

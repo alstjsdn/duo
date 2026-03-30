@@ -28,18 +28,24 @@ public class SecurityConfig {
                 .ignoringRequestMatchers("/api/**")
             )
 
+            .headers(headers -> headers
+                .contentTypeOptions(contentType -> {})
+            )
+
             .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers("/", "/login", "/signup", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/", "/login", "/signup", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
 
                 .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                 .requestMatchers(HttpMethod.GET, "/boards/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/boards/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
 
                 .requestMatchers("/admin/**").hasRole("ADMIN")
             )
+
 
             .formLogin(form -> form
                 .loginPage("/login")

@@ -33,6 +33,17 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
+    private String riotId;
+
+    @Column(nullable = false)
+    private String riotTag;
+
+    @Column(length = 200)
+    private String bio;
+
+    private String profileImage;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -41,14 +52,23 @@ public class User {
     private LocalDateTime updatedAt;
 
     @Builder
-    public User(String username, String password, String name, Role role) {
+    public User(String username, String password, String name, Role role, String riotId, String riotTag) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.role = role != null ? role : Role.USER;
+        this.riotId = riotId;
+        this.riotTag = riotTag;
     }
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void updateProfile(String bio, String profileImage) {
+        this.bio = bio;
+        if (profileImage != null) {
+            this.profileImage = profileImage;
+        }
     }
 }
