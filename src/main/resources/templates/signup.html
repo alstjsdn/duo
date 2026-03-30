@@ -5,220 +5,254 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원가입 - Duo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            background: #fafafa;
+            background: #ffffff;
             min-height: 100vh;
-            display: flex;
-        }
-
-        .brand-panel {
-            width: 420px;
-            min-height: 100vh;
-            background: #18181b;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 60px 52px;
-            flex-shrink: 0;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: -0.5px;
-            margin-bottom: 48px;
-        }
-
-        .logo span { color: #f97316; }
-
-        .brand-title {
-            font-size: 32px;
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.3;
-            margin-bottom: 16px;
-        }
-
-        .brand-desc {
-            color: #a1a1aa;
-            font-size: 15px;
-            line-height: 1.7;
-        }
-
-        .brand-footer {
-            margin-top: auto;
-            padding-top: 48px;
-            color: #52525b;
-            font-size: 13px;
-        }
-
-        .form-panel {
-            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
+            padding: 20px;
         }
 
-        .form-box {
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(129,140,248,0.08);
+            border: 1px solid #e8e5f3;
+            display: flex;
             width: 100%;
-            max-width: 400px;
+            max-width: 860px;
+            overflow: hidden;
         }
 
-        .form-box h1 {
-            font-size: 24px;
+        .brand {
+            width: 300px;
+            flex-shrink: 0;
+            background: linear-gradient(180deg, #f0eeff, #e8e5f3);
+            padding: 52px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1f2937;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span { color: #818cf8; }
+
+        .brand-body { margin-top: 48px; }
+
+        .brand-title {
+            font-size: 26px;
             font-weight: 700;
-            color: #18181b;
-            margin-bottom: 6px;
+            color: #1f2937;
+            line-height: 1.35;
+            margin-bottom: 14px;
         }
 
-        .form-subtitle {
-            color: #71717a;
+        .brand-desc {
+            color: #6b7280;
             font-size: 14px;
-            margin-bottom: 32px;
+            line-height: 1.75;
         }
 
-        .form-group { margin-bottom: 18px; }
+        .brand-footer { color: #9ca3af; font-size: 12px; }
+
+        .form-panel {
+            flex: 1;
+            padding: 44px 48px;
+            overflow-y: auto;
+        }
+
+        .form-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .form-sub {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 28px;
+        }
+
+        .alert {
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-group { margin-bottom: 14px; }
 
         label {
-            display: block;
-            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
             font-weight: 600;
-            color: #3f3f46;
+            color: #6b7280;
             margin-bottom: 6px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
         }
 
-        .input-hint {
+        .hint {
             font-size: 11px;
-            color: #a1a1aa;
+            color: #b0b5c0;
             font-weight: 400;
-            margin-left: 4px;
+            text-transform: none;
+            letter-spacing: 0;
         }
 
         input[type="text"],
         input[type="password"] {
             width: 100%;
-            padding: 11px 14px;
-            border: 1.5px solid #e4e4e7;
-            border-radius: 7px;
+            padding: 10px 13px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 9px;
             font-size: 14px;
             font-family: inherit;
-            color: #18181b;
-            background: #fff;
-            transition: border-color 0.15s;
+            color: #1f2937;
+            background: #fafaff;
+            transition: all 0.15s;
         }
 
-        input[type="text"]:focus,
-        input[type="password"]:focus {
+        input:focus {
             outline: none;
-            border-color: #f97316;
+            border-color: #818cf8;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(129,140,248,0.12);
         }
 
         .error-message {
-            color: #be123c;
-            font-size: 12px;
-            margin-top: 5px;
+            color: #dc2626;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #f0eeff;
+            margin: 18px 0 16px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #b0b5c0;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 14px;
         }
 
         .btn-submit {
             width: 100%;
             padding: 12px;
-            background: #18181b;
+            background: #818cf8;
             color: #fff;
             border: none;
-            border-radius: 7px;
-            font-size: 15px;
+            border-radius: 9px;
+            font-size: 14px;
             font-weight: 600;
             font-family: inherit;
             cursor: pointer;
             margin-top: 8px;
             transition: background 0.15s;
+            box-shadow: 0 2px 8px rgba(129,140,248,0.25);
         }
 
-        .btn-submit:hover { background: #27272a; }
-
-        .alert {
-            padding: 12px 14px;
-            border-radius: 7px;
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-
-        .alert-error {
-            background: #fff1f2;
-            color: #be123c;
-            border: 1px solid #fecdd3;
-        }
+        .btn-submit:hover { background: #7070f0; }
 
         .bottom-link {
             text-align: center;
-            margin-top: 24px;
-            font-size: 14px;
-            color: #71717a;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #64748b;
         }
 
-        .bottom-link a {
-            color: #f97316;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
+        .bottom-link a { color: #818cf8; text-decoration: none; font-weight: 600; }
         .bottom-link a:hover { text-decoration: underline; }
 
-        @media (max-width: 768px) {
-            .brand-panel { display: none; }
+        @media (max-width: 680px) {
+            .brand { display: none; }
+            .form-panel { padding: 36px 24px; }
+            .form-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="brand-panel">
-        <div class="logo">Du<span>o</span></div>
-        <div class="brand-title">함께 시작하는<br>새로운 공간.</div>
-        <p class="brand-desc">지금 가입하고 Duo 커뮤니티의<br>일원이 되어보세요.</p>
-        <div class="brand-footer">© 2026 Duo. All rights reserved.</div>
-    </div>
+    <div class="card">
+        <div class="brand">
+            <div class="logo">Du<span>o</span></div>
+            <div class="brand-body">
+                <div class="brand-title">함께 시작하는<br>새로운 공간.</div>
+                <p class="brand-desc">지금 가입하고 Duo 커뮤니티의<br>일원이 되어보세요.</p>
+            </div>
+            <div class="brand-footer">© 2026 Duo. All rights reserved.</div>
+        </div>
 
-    <div class="form-panel">
-        <div class="form-box">
-            <h1>회원가입</h1>
-            <p class="form-subtitle">계정 정보를 입력해주세요</p>
+        <div class="form-panel">
+            <div class="form-title">회원가입</div>
+            <p class="form-sub">계정 정보를 입력해주세요</p>
 
             <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
             <form th:action="@{/signup}" method="post" th:object="${userRequest}">
-                <div class="form-group">
-                    <label for="name">이름</label>
-                    <input type="text" id="name" th:field="*{name}" required autofocus
-                           placeholder="이름 입력">
-                    <div class="error-message" th:if="${#fields.hasErrors('name')}"
-                         th:errors="*{name}"></div>
-                </div>
 
-                <div class="form-group">
-                    <label for="username">
-                        아이디
-                        <span class="input-hint">소문자+숫자 8~11자</span>
-                    </label>
-                    <input type="text" id="username" th:field="*{username}" required
-                           placeholder="아이디 입력"
-                           pattern="[a-z0-9]{8,11}"
-                           title="소문자 영어와 숫자만 가능하며, 8자 이상 11자 이하여야 합니다.">
-                    <div class="error-message" th:if="${#fields.hasErrors('username')}"
-                         th:errors="*{username}"></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">이름</label>
+                        <input type="text" id="name" th:field="*{name}" required autofocus placeholder="이름 입력">
+                        <div class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="username">아이디 <span class="hint">소문자+숫자 8~11자</span></label>
+                        <input type="text" id="username" th:field="*{username}" required
+                               placeholder="아이디 입력" pattern="[a-z0-9]{8,11}">
+                        <div class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="password">비밀번호</label>
-                    <input type="password" id="password" th:field="*{password}" required
-                           placeholder="비밀번호 입력">
-                    <div class="error-message" th:if="${#fields.hasErrors('password')}"
-                         th:errors="*{password}"></div>
+                    <input type="password" id="password" th:field="*{password}" required placeholder="비밀번호 입력">
+                    <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+
+                <hr class="divider">
+                <div class="section-label">라이엇 계정 연동</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="riotId">닉네임 <span class="hint">Hide on bush</span></label>
+                        <input type="text" id="riotId" th:field="*{riotId}" required placeholder="라이엇 닉네임">
+                        <div class="error-message" th:if="${#fields.hasErrors('riotId')}" th:errors="*{riotId}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="riotTag">태그 <span class="hint">KR1</span></label>
+                        <input type="text" id="riotTag" th:field="*{riotTag}" required placeholder="태그">
+                        <div class="error-message" th:if="${#fields.hasErrors('riotTag')}" th:errors="*{riotTag}"></div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-submit">가입하기</button>

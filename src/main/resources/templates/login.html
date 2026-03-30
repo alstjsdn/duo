@@ -5,206 +5,204 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로그인 - Duo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            background: #fafafa;
+            background: #ffffff;
             min-height: 100vh;
-            display: flex;
-        }
-
-        /* 왼쪽 브랜딩 패널 */
-        .brand-panel {
-            width: 420px;
-            min-height: 100vh;
-            background: #18181b;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 60px 52px;
-            flex-shrink: 0;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: -0.5px;
-            margin-bottom: 48px;
-        }
-
-        .logo span { color: #f97316; }
-
-        .brand-title {
-            font-size: 32px;
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.3;
-            margin-bottom: 16px;
-        }
-
-        .brand-desc {
-            color: #a1a1aa;
-            font-size: 15px;
-            line-height: 1.7;
-        }
-
-        .brand-footer {
-            margin-top: auto;
-            padding-top: 48px;
-            color: #52525b;
-            font-size: 13px;
-        }
-
-        /* 오른쪽 폼 패널 */
-        .form-panel {
-            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
+            padding: 20px;
         }
 
-        .form-box {
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(129,140,248,0.08);
+            border: 1px solid #e8e5f3;
+            display: flex;
             width: 100%;
-            max-width: 400px;
+            max-width: 860px;
+            overflow: hidden;
         }
 
-        .form-box h1 {
-            font-size: 24px;
+        /* 왼쪽 브랜딩 */
+        .brand {
+            width: 340px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #f0eeff, #e8e5f3);
+            padding: 52px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1f2937;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span { color: #818cf8; }
+
+        .brand-body { margin-top: 48px; }
+
+        .brand-title {
+            font-size: 28px;
             font-weight: 700;
-            color: #18181b;
-            margin-bottom: 6px;
+            color: #1f2937;
+            line-height: 1.35;
+            margin-bottom: 14px;
         }
 
-        .form-box .form-subtitle {
-            color: #71717a;
+        .brand-desc {
+            color: #6b7280;
             font-size: 14px;
+            line-height: 1.75;
+        }
+
+        .brand-footer {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        /* 오른쪽 폼 */
+        .form-panel {
+            flex: 1;
+            padding: 52px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .form-sub {
+            font-size: 13px;
+            color: #9ca3af;
             margin-bottom: 32px;
         }
 
-        .form-group { margin-bottom: 18px; }
+        .alert {
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-error  { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .alert-success{ background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+
+        .form-group { margin-bottom: 16px; }
 
         label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            color: #3f3f46;
+            color: #6b7280;
             margin-bottom: 6px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
         }
 
         input[type="text"],
         input[type="password"] {
             width: 100%;
             padding: 11px 14px;
-            border: 1.5px solid #e4e4e7;
-            border-radius: 7px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 9px;
             font-size: 14px;
             font-family: inherit;
-            color: #18181b;
-            background: #fff;
-            transition: border-color 0.15s;
+            color: #1f2937;
+            background: #fafaff;
+            transition: all 0.15s;
         }
 
         input[type="text"]:focus,
         input[type="password"]:focus {
             outline: none;
-            border-color: #f97316;
+            border-color: #818cf8;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(129,140,248,0.12);
         }
 
         .btn-submit {
             width: 100%;
             padding: 12px;
-            background: #18181b;
+            background: #818cf8;
             color: #fff;
             border: none;
-            border-radius: 7px;
-            font-size: 15px;
+            border-radius: 9px;
+            font-size: 14px;
             font-weight: 600;
             font-family: inherit;
             cursor: pointer;
             margin-top: 8px;
             transition: background 0.15s;
+            box-shadow: 0 2px 8px rgba(129,140,248,0.25);
         }
 
-        .btn-submit:hover { background: #27272a; }
-
-        .alert {
-            padding: 12px 14px;
-            border-radius: 7px;
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-
-        .alert-error {
-            background: #fff1f2;
-            color: #be123c;
-            border: 1px solid #fecdd3;
-        }
-
-        .alert-success {
-            background: #f0fdf4;
-            color: #15803d;
-            border: 1px solid #bbf7d0;
-        }
+        .btn-submit:hover { background: #7070f0; }
 
         .bottom-link {
             text-align: center;
-            margin-top: 24px;
-            font-size: 14px;
-            color: #71717a;
+            margin-top: 22px;
+            font-size: 13px;
+            color: #64748b;
         }
 
         .bottom-link a {
-            color: #f97316;
+            color: #818cf8;
             text-decoration: none;
             font-weight: 600;
         }
 
         .bottom-link a:hover { text-decoration: underline; }
 
-        @media (max-width: 768px) {
-            .brand-panel { display: none; }
+        @media (max-width: 680px) {
+            .brand { display: none; }
+            .form-panel { padding: 40px 28px; }
         }
     </style>
 </head>
 <body>
-    <div class="brand-panel">
-        <div class="logo">Du<span>o</span></div>
-        <div class="brand-title">다시 만나서<br>반갑습니다.</div>
-        <p class="brand-desc">Duo 계정으로 로그인하고<br>커뮤니티에 참여해보세요.</p>
-        <div class="brand-footer">© 2026 Duo. All rights reserved.</div>
-    </div>
+    <div class="card">
+        <div class="brand">
+            <div class="logo">Du<span>o</span></div>
+            <div class="brand-body">
+                <div class="brand-title">다시 만나서<br>반갑습니다.</div>
+                <p class="brand-desc">Duo 계정으로 로그인하고<br>커뮤니티에 참여해보세요.</p>
+            </div>
+            <div class="brand-footer">© 2026 Duo. All rights reserved.</div>
+        </div>
 
-    <div class="form-panel">
-        <div class="form-box">
-            <h1>로그인</h1>
-            <p class="form-subtitle">계정 정보를 입력해주세요</p>
+        <div class="form-panel">
+            <div class="form-title">로그인</div>
+            <p class="form-sub">계정 정보를 입력해주세요</p>
 
-            <div th:if="${param.error}" class="alert alert-error">
-                아이디 또는 비밀번호가 올바르지 않습니다.
-            </div>
-            <div th:if="${param.logout}" class="alert alert-success">
-                로그아웃되었습니다.
-            </div>
-            <div th:if="${param.signup}" class="alert alert-success">
-                회원가입이 완료되었습니다. 로그인해주세요.
-            </div>
+            <div th:if="${param.error}" class="alert alert-error">아이디 또는 비밀번호가 올바르지 않습니다.</div>
+            <div th:if="${param.logout}" class="alert alert-success">로그아웃되었습니다.</div>
+            <div th:if="${param.signup}" class="alert alert-success">회원가입이 완료되었습니다. 로그인해주세요.</div>
 
             <form th:action="@{/login}" method="post">
                 <div class="form-group">
                     <label for="username">아이디</label>
-                    <input type="text" id="username" name="username" required autofocus
-                           placeholder="아이디 입력" pattern="[a-z0-9]{8,11}"
-                           title="소문자 영어와 숫자만 가능하며, 8자 이상 11자 이하여야 합니다.">
+                    <input type="text" id="username" name="username" required autofocus placeholder="아이디 입력">
                 </div>
                 <div class="form-group">
                     <label for="password">비밀번호</label>
-                    <input type="password" id="password" name="password" required
-                           placeholder="비밀번호 입력">
+                    <input type="password" id="password" name="password" required placeholder="비밀번호 입력">
                 </div>
                 <button type="submit" class="btn-submit">로그인</button>
             </form>

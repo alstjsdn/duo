@@ -8,23 +8,24 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            background: #fafafa;
+            background: #ffffff;
             min-height: 100vh;
-            color: #18181b;
+            color: #1f2937;
         }
 
         /* 헤더 */
         header {
-            background: #18181b;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
             padding: 0 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 56px;
+            height: 58px;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -33,41 +34,39 @@
         .logo {
             font-size: 20px;
             font-weight: 700;
-            color: #fff;
+            color: #1f2937;
             text-decoration: none;
             letter-spacing: -0.5px;
         }
 
-        .logo span { color: #f97316; }
+        .logo span { color: #818cf8; }
 
         .header-nav {
             display: flex;
             align-items: center;
-            gap: 20px;
-            font-size: 14px;
+            gap: 8px;
+            font-size: 13px;
         }
 
-        .header-nav span { color: #a1a1aa; }
+        .header-nav span { color: #9ca3af; }
 
         .header-nav a {
-            color: #d4d4d8;
+            color: #6b7280;
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.15s;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.15s;
         }
 
-        .header-nav a:hover { color: #fff; }
+        .header-nav a:hover { color: #1f2937; background: rgba(129,140,248,0.06); }
 
-        .nav-divider {
-            width: 1px;
-            height: 14px;
-            background: #3f3f46;
-        }
+        .nav-divider { width: 1px; height: 14px; background: #e5e7eb; }
 
         /* 컨텐츠 */
         .container {
-            max-width: 1040px;
-            margin: 36px auto;
+            max-width: 1060px;
+            margin: 32px auto;
             padding: 0 20px;
         }
 
@@ -79,46 +78,47 @@
         }
 
         .page-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
-            color: #18181b;
+            color: #1f2937;
         }
 
         .btn-write {
-            padding: 9px 20px;
-            background: #f97316;
+            padding: 8px 18px;
+            background: #818cf8;
             color: #fff;
             text-decoration: none;
-            border-radius: 7px;
+            border-radius: 8px;
             font-size: 13px;
             font-weight: 600;
             transition: background 0.15s;
+            box-shadow: 0 1px 3px rgba(129,140,248,0.3);
         }
 
-        .btn-write:hover { background: #ea6c0a; }
+        .btn-write:hover { background: #7070f0; }
 
         /* 검색 */
         .search-box {
-            background: #fff;
-            border: 1px solid #e4e4e7;
-            border-radius: 10px;
-            padding: 16px 20px;
-            margin-bottom: 16px;
+            background: #fafaff;
+            border: 1px solid #e8e5f3;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 14px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .search-box select,
         .search-box input[type="text"] {
-            padding: 9px 12px;
-            border: 1.5px solid #e4e4e7;
-            border-radius: 7px;
+            padding: 8px 12px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
             font-size: 13px;
             font-family: inherit;
-            color: #18181b;
-            background: #fff;
-            transition: border-color 0.15s;
+            color: #1f2937;
+            background: #ffffff;
+            transition: border-color 0.15s, background 0.15s;
             flex: 1;
             min-width: 120px;
         }
@@ -126,15 +126,16 @@
         .search-box select:focus,
         .search-box input[type="text"]:focus {
             outline: none;
-            border-color: #f97316;
+            border-color: #818cf8;
+            background: #fff;
         }
 
         .search-box button {
-            padding: 9px 20px;
-            background: #18181b;
+            padding: 8px 20px;
+            background: #818cf8;
             color: #fff;
             border: none;
-            border-radius: 7px;
+            border-radius: 8px;
             font-size: 13px;
             font-weight: 600;
             font-family: inherit;
@@ -142,74 +143,73 @@
             transition: background 0.15s;
         }
 
-        .search-box button:hover { background: #27272a; }
+        .search-box button:hover { background: #7070f0; }
 
         /* 테이블 */
         .board-wrap {
-            background: #fff;
-            border: 1px solid #e4e4e7;
-            border-radius: 10px;
+            background: #ffffff;
+            border: 1px solid #e8e5f3;
+            border-radius: 12px;
             overflow: hidden;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        table { width: 100%; border-collapse: collapse; }
 
-        thead tr {
-            background: #f4f4f5;
-            border-bottom: 1px solid #e4e4e7;
-        }
+        thead tr { border-bottom: 1.5px solid #e8e5f3; }
 
         th {
-            padding: 12px 16px;
+            padding: 11px 16px;
             text-align: left;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
-            color: #71717a;
+            color: #9ca3af;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.06em;
+            background: #fafaff;
         }
 
         td {
-            padding: 14px 16px;
+            padding: 13px 16px;
             font-size: 14px;
-            color: #3f3f46;
-            border-bottom: 1px solid #f4f4f5;
+            color: #4b5563;
+            border-bottom: 1px solid #f3f4f6;
         }
 
         tbody tr:last-child td { border-bottom: none; }
 
-        tbody tr:hover { background: #fafafa; }
+        tbody tr { transition: background 0.1s; }
+        tbody tr:hover { background: #fafaff; }
 
         .title-link {
-            color: #18181b;
+            color: #1f2937;
             text-decoration: none;
             font-weight: 500;
+            transition: color 0.15s;
         }
 
-        .title-link:hover { color: #f97316; }
+        .title-link:hover { color: #818cf8; }
 
         .badge {
             display: inline-block;
             padding: 2px 9px;
-            background: #fff7ed;
-            color: #c2410c;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 600;
-            border: 1px solid #fed7aa;
         }
 
-        .view-count { color: #a1a1aa; font-size: 13px; }
-        .date { color: #a1a1aa; font-size: 13px; }
-        .author { color: #52525b; }
+        .badge-QUESTION { background: #eff0ff; color: #6366f1; }
+        .badge-FREE     { background: #ecfdf5; color: #059669; }
+        .badge-RANK     { background: #fef3e2; color: #d97706; }
+        .badge-CLASSIC  { background: #f5f0ff; color: #8b5cf6; }
+
+        .view-count { color: #9ca3af; font-size: 13px; }
+        .date       { color: #9ca3af; font-size: 13px; }
+        .author     { color: #6b7280; font-size: 13px; font-weight: 500; }
 
         .empty {
             text-align: center;
             padding: 60px;
-            color: #a1a1aa;
+            color: #9ca3af;
             font-size: 14px;
         }
 
@@ -227,67 +227,34 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 7px;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
             font-size: 13px;
             font-weight: 500;
             text-decoration: none;
-            border: 1px solid #e4e4e7;
-            color: #52525b;
+            border: 1.5px solid #e5e7eb;
+            color: #4b5563;
             background: #fff;
             transition: all 0.15s;
         }
 
-        .pagination a:hover {
-            border-color: #f97316;
-            color: #f97316;
-        }
-
-        .pagination .active {
-            background: #18181b;
-            color: #fff;
-            border-color: #18181b;
-        }
-
-        .pagination .disabled {
-            color: #d4d4d8;
-            pointer-events: none;
-            background: #fafafa;
-        }
+        .pagination a:hover { border-color: #818cf8; color: #818cf8; }
+        .pagination .active { background: #818cf8; color: #fff; border-color: #818cf8; }
+        .pagination .disabled { color: #d1d5db; pointer-events: none; background: #fafaff; }
     </style>
 </head>
 <body>
 
-<header>
-    <a th:href="@{/boards}" class="logo">Du<span>o</span></a>
-    <nav class="header-nav">
-        <div sec:authorize="isAuthenticated()">
-            <span sec:authentication="name"></span>님
-        </div>
-        <div class="nav-divider"></div>
-        <div sec:authorize="isAuthenticated()">
-            <a th:href="@{/logout}">로그아웃</a>
-        </div>
-        <div sec:authorize="!isAuthenticated()">
-            <a th:href="@{/login}">로그인</a>
-        </div>
-        <div sec:authorize="!isAuthenticated()">
-            <div class="nav-divider"></div>
-            <a th:href="@{/signup}">회원가입</a>
-        </div>
-    </nav>
-</header>
+<header th:replace="~{fragments/header :: header}"></header>
 
 <div class="container">
 
     <div class="page-header">
         <h1 class="page-title">게시판</h1>
-        <a th:href="@{/boards/write}" class="btn-write"
-           sec:authorize="isAuthenticated()">+ 글쓰기</a>
+        <a th:href="@{/boards/write}" class="btn-write" sec:authorize="isAuthenticated()">+ 글쓰기</a>
     </div>
 
-    <!-- 검색 -->
     <form th:action="@{/boards}" method="get" class="search-box">
         <select name="type">
             <option value="" th:selected="${search.type == null}">전체 유형</option>
@@ -301,7 +268,6 @@
         <button type="submit">검색</button>
     </form>
 
-    <!-- 목록 -->
     <div class="board-wrap">
         <table>
             <thead>
@@ -310,7 +276,7 @@
                     <th style="width:90px">유형</th>
                     <th>제목</th>
                     <th style="width:110px">작성자</th>
-                    <th style="width:70px">조회</th>
+                    <th style="width:60px">조회</th>
                     <th style="width:140px">작성일</th>
                 </tr>
             </thead>
@@ -319,8 +285,12 @@
                     <td colspan="6" class="empty">게시글이 없습니다.</td>
                 </tr>
                 <tr th:each="board : ${boards}">
-                    <td th:text="${board.boardId}" style="color:#a1a1aa; font-size:13px;"></td>
-                    <td><span class="badge" th:text="${board.type}"></span></td>
+                    <td style="color:#cbd5e1; font-size:12px;" th:text="${board.boardId}"></td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="'badge-' + ${board.type}"
+                              th:text="${board.type.name}"></span>
+                    </td>
                     <td>
                         <a th:href="@{/boards/{id}(id=${board.boardId})}"
                            class="title-link"
@@ -328,24 +298,21 @@
                     </td>
                     <td class="author" th:text="${board.author}"></td>
                     <td class="view-count" th:text="${board.viewCount}"></td>
-                    <td class="date" th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td class="date" th:text="${#temporals.format(board.createdAt, 'yyyy.MM.dd HH:mm')}"></td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- 페이징 -->
     <div class="pagination" th:if="${boards.totalPages > 0}">
         <a th:classappend="${boards.first} ? 'disabled'"
            th:href="@{/boards(page=${boards.number - 1}, type=${search.type}, title=${search.title}, content=${search.content})}">&lsaquo;</a>
-
         <th:block th:each="i : ${#numbers.sequence(0, boards.totalPages - 1)}">
             <a th:if="${i != boards.number}"
                th:href="@{/boards(page=${i}, type=${search.type}, title=${search.title}, content=${search.content})}"
                th:text="${i + 1}"></a>
             <span th:if="${i == boards.number}" class="active" th:text="${i + 1}"></span>
         </th:block>
-
         <a th:classappend="${boards.last} ? 'disabled'"
            th:href="@{/boards(page=${boards.number + 1}, type=${search.type}, title=${search.title}, content=${search.content})}">&rsaquo;</a>
     </div>
