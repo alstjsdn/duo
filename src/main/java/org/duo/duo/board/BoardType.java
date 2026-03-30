@@ -7,9 +7,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum BoardType {
 
-    LEAGUE_OF_LEGEND("리그오브레전드"),
-    VALORANT("발로란트"),
-    OTHER("기타");
+    QUESTION("질문"),
+    FREE("자유"),
+    RANK("랭크"),
+    CLASSIC("일반");
 
     private final String name;
 }

@@ -6,12 +6,18 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.duo.duo.board.Board;
 import org.duo.duo.board.BoardRepository;
+import org.duo.duo.board.BoardResponse;
+import org.duo.duo.common.constants.PageConstants;
 import org.duo.duo.user.Role;
 import org.duo.duo.user.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +27,20 @@ public class CommentService {
     private final BoardRepository boardRepository;
 
     public Page<CommentResponse> findByBoardId(Long boardId, Pageable pageable) {
-        return commentRepository.findByBoard_BoardId(boardId, pageable)
+        return commentRepository.findByBoard_BoardIdAndParentIsNull(boardId, pageable)
                 .map(CommentResponse::from);
     }
 
-    public void create(User user, Long boardId, CommentRequest request) {
+    public void create(User user, Long boardId, Long parentId, CommentRequest request) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        Comment parent = (parentId != null)
+                ? commentRepository.findById(parentId).orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."))
+                : null;
         commentRepository.save(Comment.builder()
                 .board(board)
                 .user(user)
+                .parent(parent)
                 .content(request.getContent())
                 .build());
     }
@@ -58,5 +68,11 @@ public class CommentService {
         }
 
         commentRepository.delete(comment);
+    }
+
+    public Page<CommentResponse> findMyComment(User user) {
+
+        PageRequest pageable = PageConstants.of(Integer.parseInt(PageConstants.DEFAULT_PAGE), Sort.by("createdAt").descending());
+        return commentRepository.findByUser_UserId(user.getUserId(), pageable).map(CommentResponse::from);
     }
 }
