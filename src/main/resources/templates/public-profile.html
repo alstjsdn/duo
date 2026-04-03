@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${target.name} + '의 프로필 - Duo'">프로필 - Duo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body { font-family: 'Noto Sans KR', sans-serif; background: #ffffff; min-height: 100vh; color: #1f2937; }
+
+        header { background: #ffffff; padding: 0 40px; display: flex; justify-content: space-between; align-items: center; height: 56px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #e5e7eb; }
+
+        .logo { font-size: 20px; font-weight: 800; color: #1f2937; text-decoration: none; letter-spacing: -0.5px; }
+        .logo span { color: #818cf8; }
+
+        .header-nav { display: flex; align-items: center; gap: 20px; font-size: 14px; }
+        .header-nav span { color: #9ca3af; }
+        .header-nav a { color: #6b7280; text-decoration: none; font-weight: 500; transition: color 0.15s; }
+        .header-nav a:hover { color: #1f2937; }
+        .nav-divider { width: 1px; height: 14px; background: #e5e7eb; }
+
+        .container { max-width: 860px; margin: 0 auto; padding: 40px 20px; }
+
+        .profile-hero {
+            background: #fafaff;
+            border: 1px solid #e8e5f3;
+            border-radius: 16px;
+            padding: 36px 40px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(129,140,248,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .profile-avatar {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, #818cf8, #6366f1);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 800; color: #fff;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 3px rgba(129,140,248,0.2);
+            overflow: hidden;
+        }
+
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .profile-info { flex: 1; }
+
+        .profile-name { font-size: 22px; font-weight: 700; color: #1f2937; margin-bottom: 6px; }
+
+        .riot-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(129,140,248,0.08);
+            border: 1px solid rgba(129,140,248,0.2);
+            border-radius: 20px; padding: 4px 12px;
+            font-size: 13px; color: #6366f1; font-weight: 600;
+        }
+
+        .profile-bio { font-size: 13px; color: #6b7280; margin-top: 8px; line-height: 1.6; }
+
+        /* 랭크 카드 */
+        .rank-card {
+            background: #fafaff; border: 1px solid #e8e5f3;
+            border-radius: 16px; padding: 24px 28px;
+            margin-bottom: 28px; display: flex; align-items: center; gap: 20px;
+        }
+
+        .rank-emblem { width: 90px; height: 90px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.1)); }
+        .rank-info { flex: 1; }
+        .rank-tier { font-size: 20px; font-weight: 800; color: #1f2937; margin-bottom: 4px; }
+        .rank-lp { font-size: 14px; font-weight: 600; color: #6366f1; margin-bottom: 6px; }
+        .rank-record { font-size: 13px; color: #6b7280; }
+        .rank-record .wins { color: #2563eb; font-weight: 600; }
+        .rank-record .losses { color: #dc2626; font-weight: 600; }
+        .rank-record .winrate { color: #4b5563; font-weight: 600; }
+
+        .rank-card.unranked { align-items: center; }
+        .rank-card.unranked .rank-tier { color: #9ca3af; font-weight: 600; font-size: 15px; }
+
+        /* 섹션 */
+        .section { margin-bottom: 32px; }
+
+        .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .section-title { font-size: 15px; font-weight: 700; color: #1f2937; }
+        .section-count { font-size: 12px; color: #6b7280; background: #f0eeff; padding: 2px 8px; border-radius: 20px; border: 1px solid #e8e5f3; }
+
+        .list { display: flex; flex-direction: column; gap: 6px; }
+
+        .list-item {
+            background: #fafaff; border: 1px solid #e8e5f3; border-radius: 12px;
+            padding: 14px 18px; display: flex; align-items: center; gap: 14px;
+            transition: background 0.15s, border-color 0.15s;
+            text-decoration: none; color: inherit;
+        }
+
+        .list-item:hover { border-color: rgba(129,140,248,0.3); background: rgba(129,140,248,0.04); }
+        .list-item-main { flex: 1; min-width: 0; }
+
+        .list-item-title { font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-item-meta { font-size: 12px; color: #9ca3af; display: flex; align-items: center; gap: 8px; }
+
+        .type-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: rgba(129,140,248,0.1); color: #6366f1; flex-shrink: 0; }
+
+        .empty { text-align: center; padding: 40px; color: #9ca3af; font-size: 14px; background: #fafaff; border: 1px solid #e8e5f3; border-radius: 12px; }
+
+        .btn-load-matches { background: #ffffff; border: 1.5px solid #e5e7eb; color: #6b7280; padding: 7px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+        .btn-load-matches:hover { border-color: #818cf8; color: #1f2937; }
+        .match-progress { display: none; height: 3px; background: #f0eeff; border-radius: 3px; margin-bottom: 10px; overflow: hidden; }
+        .match-progress.active { display: block; }
+        .match-progress-bar { height: 100%; background: #818cf8; border-radius: 3px; animation: progress-indeterminate 1.2s ease-in-out infinite; }
+        @keyframes progress-indeterminate { 0% { transform: translateX(-100%); width: 50%; } 50% { width: 70%; } 100% { transform: translateX(200%); width: 50%; } }
+        .match-list { display: flex; flex-direction: column; gap: 6px; }
+        .match-item { background: #fafaff; border: 1px solid #e8e5f3; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; position: relative; overflow: hidden; }
+        .match-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }
+        .match-item.win::before { background: #818cf8; } .match-item.lose::before { background: #f87171; }
+        .match-item.win { background: rgba(129,140,248,0.04); } .match-item.lose { background: rgba(248,113,113,0.04); }
+        .match-champ { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid #e8e5f3; flex-shrink: 0; }
+        .match-main { flex: 1; min-width: 0; }
+        .match-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .match-champ-name { font-size: 13px; font-weight: 700; color: #1f2937; }
+        .match-mode { font-size: 11px; color: #6b7280; background: #f0eeff; border: 1px solid #e8e5f3; padding: 1px 6px; border-radius: 20px; }
+        .match-kda { font-size: 12px; color: #9ca3af; }
+        .match-kda .k, .match-kda .a { color: #1f2937; font-weight: 600; } .match-kda .d { color: #ef4444; font-weight: 600; }
+        .match-items { display: flex; gap: 3px; }
+        .match-items img { width: 22px; height: 22px; border-radius: 4px; border: 1px solid #e8e5f3; }
+        .match-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+        .match-result { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 6px; }
+        .match-result.win { background: rgba(129,140,248,0.12); color: #6366f1; }
+        .match-result.lose { background: rgba(248,113,113,0.12); color: #ef4444; }
+        .match-date { font-size: 11px; color: #9ca3af; }
+    </style>
+</head>
+<body>
+
+<header th:replace="~{fragments/header :: header}"></header>
+
+<div class="container">
+
+    <!-- 프로필 히어로 -->
+    <div class="profile-hero">
+        <div class="profile-avatar" th:if="${target.profileImage != null}">
+            <img th:src="${target.profileImage}" alt="프로필">
+        </div>
+        <div class="profile-avatar" th:unless="${target.profileImage != null}"
+             th:text="${#strings.substring(target.name, 0, 1)}"></div>
+        <div class="profile-info">
+            <div class="profile-name" th:text="${target.name}"></div>
+            <div class="riot-badge" th:if="${target.riotId != null}">
+                <span>⚔</span>
+                <span th:text="${target.riotId + ' #' + target.riotTag}"></span>
+            </div>
+            <div class="profile-bio" th:if="${target.bio != null}" th:text="${target.bio}"></div>
+        </div>
+    </div>
+
+    <!-- 랭크 카드 -->
+    <div class="rank-card" th:if="${rank != null}">
+        <img class="rank-emblem"
+             th:src="'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/' + ${rank.tier.toLowerCase()} + '.svg'"
+             th:alt="${rank.tier}">
+        <div class="rank-info">
+            <div class="rank-tier" th:text="${rank.tier + ' ' + rank.rank}"></div>
+            <div class="rank-lp" th:text="${rank.leaguePoints + ' LP'}"></div>
+            <div class="rank-record">
+                <span class="wins" th:text="${rank.wins + '승'}"></span>
+                <span> </span>
+                <span class="losses" th:text="${rank.losses + '패'}"></span>
+                <span> · </span>
+                <span class="winrate" th:text="${#numbers.formatDecimal(rank.wins * 100.0 / (rank.wins + rank.losses), 1, 0)} + '%'"></span>
+            </div>
+        </div>
+    </div>
+    <div class="rank-card unranked" th:if="${rank == null && target.riotId != null}">
+        <img class="rank-emblem" src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/unranked.svg" alt="Unranked">
+        <div class="rank-info">
+            <div class="rank-tier">Unranked</div>
+        </div>
+    </div>
+
+    <!-- 최근 전적 -->
+    <div class="section" th:if="${target.riotId != null}">
+        <div class="section-header">
+            <div class="section-title">최근 전적</div>
+            <button class="btn-load-matches" id="loadMatchesBtn"
+                    th:data-riot-id="${target.riotId}"
+                    th:data-riot-tag="${target.riotTag}"
+                    onclick="loadMatches(this)">
+                불러오기
+            </button>
+        </div>
+        <div class="match-progress" id="matchProgress"><div class="match-progress-bar"></div></div>
+        <div id="matchList"></div>
+    </div>
+
+    <!-- 최근 작성글 -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">작성글</div>
+            <div class="section-count" th:text="${boards.totalElements} + '개'"></div>
+        </div>
+
+        <div th:if="${boards.totalElements == 0}" class="empty">작성한 게시글이 없습니다.</div>
+
+        <div class="list" th:unless="${boards.totalElements == 0}">
+            <a th:each="board : ${boards.content}" class="list-item"
+               th:href="@{/boards/{id}(id=${board.boardId})}">
+                <div class="list-item-main">
+                    <div class="list-item-title" th:text="${board.title}"></div>
+                    <div class="list-item-meta">
+                        <span th:text="${board.type.name}"></span>
+                        <span th:text="${#temporals.format(board.createdAt, 'yyyy.MM.dd HH:mm')}"></span>
+                        <span th:text="'조회 ' + ${board.viewCount}"></span>
+                    </div>
+                </div>
+                <div class="type-badge" th:text="${board.type.name}"></div>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function loadMatches(btn) {
+        var riotId = btn.dataset.riotId;
+        var riotTag = btn.dataset.riotTag;
+        var progress = document.getElementById('matchProgress');
+        var list = document.getElementById('matchList');
+
+        btn.disabled = true;
+        btn.textContent = '불러오는 중...';
+        progress.classList.add('active');
+        list.innerHTML = '';
+
+        fetch('/api/riot/matches?riotId=' + encodeURIComponent(riotId) + '&riotTag=' + encodeURIComponent(riotTag))
+            .then(function(r) { return r.json(); })
+            .then(function(matches) {
+                progress.classList.remove('active');
+                btn.textContent = '새로고침';
+                btn.disabled = false;
+
+                if (!matches.length) {
+                    list.innerHTML = '<div class="empty">전적 정보가 없습니다.</div>';
+                    return;
+                }
+
+                var html = '<div class="match-list">';
+                matches.forEach(function(m) {
+                    var cls = m.win ? 'win' : 'lose';
+                    var items = (m.itemImageUrls || []).map(function(url) {
+                        return '<img src="' + url + '" alt="item">';
+                    }).join('');
+                    html += '<div class="match-item ' + cls + '">'
+                        + '<img class="match-champ" src="' + m.championImageUrl + '" alt="' + m.championName + '">'
+                        + '<div class="match-main">'
+                        + '<div class="match-top"><span class="match-champ-name">' + m.championName + '</span><span class="match-mode">' + m.gameMode + '</span></div>'
+                        + '<div class="match-kda"><span class="k">' + m.kills + '</span> / <span class="d">' + m.deaths + '</span> / <span class="a">' + m.assists + '</span></div>'
+                        + '<div class="match-items">' + items + '</div>'
+                        + '</div>'
+                        + '<div class="match-right">'
+                        + '<span class="match-result ' + cls + '">' + (m.win ? '승리' : '패배') + '</span>'
+                        + '<span class="match-date">' + formatMatchDate(m.playedAt) + '</span>'
+                        + '</div></div>';
+                });
+                html += '</div>';
+                list.innerHTML = html;
+            })
+            .catch(function() {
+                progress.classList.remove('active');
+                btn.textContent = '불러오기';
+                btn.disabled = false;
+                list.innerHTML = '<div class="empty">전적을 불러올 수 없습니다.</div>';
+            });
+    }
+
+    function formatMatchDate(dateStr) {
+        if (!dateStr) return '';
+        var d = new Date(dateStr);
+        var p = function(n) { return n < 10 ? '0' + n : n; };
+        return (d.getMonth()+1) + '.' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+    }
+</script>
+
+</body>
+</html>
