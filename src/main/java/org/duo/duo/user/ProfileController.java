@@ -9,10 +9,7 @@ import org.duo.duo.riot.RiotService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -29,13 +26,33 @@ public class ProfileController {
     @GetMapping
     public String profile(@AuthenticationPrincipal UserPrincipal principal, Model model) {
         User user = principal.getUser();
-        model.addAttribute("user", user);
+        UserResponse userResponse = UserResponse.from(user);
+        model.addAttribute("user", userResponse);
         model.addAttribute("boards", boardService.findMyboard(user));
         model.addAttribute("comments", commentService.findMyComment(user));
-        if (user.getRiotId() != null && user.getRiotTag() != null) {
-            model.addAttribute("rank", riotService.getMyRank(user.getRiotId(), user.getRiotTag()));
+        if (userResponse.getRiotId() != null && userResponse.getRiotTag() != null) {
+            model.addAttribute("rank", riotService.getMyRank(userResponse.getRiotId(), userResponse.getRiotTag()));
         }
         return "profile";
+    }
+
+    @GetMapping("/{username}")
+    public String publicProfile(@PathVariable String username,
+                                @AuthenticationPrincipal UserPrincipal principal,
+                                Model model) {
+        UserResponse target = userService.getUserByUsername(username);
+
+        // 본인이면 마이페이지로 리다이렉트
+        if (principal != null && principal.getUser().getUsername().equals(username)) {
+            return "redirect:/profile";
+        }
+
+        model.addAttribute("target", target);
+        model.addAttribute("boards", boardService.findMyboard(userService.getUserEntity(username)));
+        if (target.getRiotId() != null && target.getRiotTag() != null) {
+            model.addAttribute("rank", riotService.getMyRank(target.getRiotId(), target.getRiotTag()));
+        }
+        return "public-profile";
     }
 
     @PostMapping("/edit")
@@ -45,4 +62,5 @@ public class ProfileController {
         userService.updateProfile(principal.getUser(), bio, profileImage);
         return "redirect:/profile";
     }
+
 }

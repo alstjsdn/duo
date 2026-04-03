@@ -25,7 +25,7 @@ public class RiotService {
         AccountDto account = riotClient.getAccount(gameName, tagLine);
         String puuid = account.getPuuid();
 
-        return riotClient.getMatchIds(puuid, count).stream()
+        return riotClient.getMatchIds(puuid, count, 420).stream()
                 .map(riotClient::getMatch)
                 .map(match -> {
                     MatchDto.ParticipantDto myData = match.getInfo().getParticipants().stream()

@@ -37,10 +37,13 @@ public class SecurityConfig {
                 .requestMatchers("/", "/login", "/signup", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
 
                 .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/notifications/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/riot/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                 .requestMatchers(HttpMethod.GET, "/boards/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/boards/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/profile/*").permitAll()
                 .requestMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
 
                 .requestMatchers("/admin/**").hasRole("ADMIN")

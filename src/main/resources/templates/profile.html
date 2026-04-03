@@ -475,6 +475,111 @@
             border: 1px solid #e8e5f3;
             border-radius: 12px;
         }
+
+        /* 전적 */
+        .btn-load-matches {
+            background: #ffffff;
+            border: 1.5px solid #e5e7eb;
+            color: #6b7280;
+            padding: 7px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-load-matches:hover { border-color: #818cf8; color: #1f2937; }
+
+        .match-progress {
+            display: none;
+            height: 3px;
+            background: #f0eeff;
+            border-radius: 3px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .match-progress.active { display: block; }
+
+        .match-progress-bar {
+            height: 100%;
+            background: #818cf8;
+            border-radius: 3px;
+            animation: progress-indeterminate 1.2s ease-in-out infinite;
+        }
+
+        @keyframes progress-indeterminate {
+            0%   { transform: translateX(-100%); width: 50%; }
+            50%  { width: 70%; }
+            100% { transform: translateX(200%); width: 50%; }
+        }
+
+        .match-list { display: flex; flex-direction: column; gap: 6px; }
+
+        .match-item {
+            background: #fafaff;
+            border: 1px solid #e8e5f3;
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .match-item::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .match-item.win::before  { background: #818cf8; }
+        .match-item.lose::before { background: #f87171; }
+        .match-item.win  { background: rgba(129,140,248,0.04); }
+        .match-item.lose { background: rgba(248,113,113,0.04); }
+
+        .match-champ {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e8e5f3;
+            flex-shrink: 0;
+        }
+
+        .match-main { flex: 1; min-width: 0; }
+
+        .match-top {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .match-champ-name { font-size: 13px; font-weight: 700; color: #1f2937; }
+        .match-mode { font-size: 11px; color: #6b7280; background: #f0eeff; border: 1px solid #e8e5f3; padding: 1px 6px; border-radius: 20px; }
+
+        .match-kda { font-size: 12px; color: #9ca3af; }
+        .match-kda .k, .match-kda .a { color: #1f2937; font-weight: 600; }
+        .match-kda .d { color: #ef4444; font-weight: 600; }
+
+        .match-items { display: flex; gap: 3px; }
+        .match-items img { width: 22px; height: 22px; border-radius: 4px; border: 1px solid #e8e5f3; }
+
+        .match-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+
+        .match-result {
+            font-size: 12px; font-weight: 700;
+            padding: 2px 9px; border-radius: 6px;
+        }
+
+        .match-result.win  { background: rgba(129,140,248,0.12); color: #6366f1; }
+        .match-result.lose { background: rgba(248,113,113,0.12); color: #ef4444; }
+        .match-date { font-size: 11px; color: #9ca3af; }
     </style>
 </head>
 <body>
@@ -525,6 +630,21 @@
         </div>
     </div>
 
+    <!-- 최근 전적 -->
+    <div class="section" th:if="${user.riotId != null}">
+        <div class="section-header">
+            <div class="section-title">최근 전적</div>
+            <button class="btn-load-matches" id="loadMatchesBtn"
+                    th:data-riot-id="${user.riotId}"
+                    th:data-riot-tag="${user.riotTag}"
+                    onclick="loadMatches(this)">
+                불러오기
+            </button>
+        </div>
+        <div class="match-progress" id="matchProgress"><div class="match-progress-bar"></div></div>
+        <div id="matchList"></div>
+    </div>
+
     <!-- 최근 작성글 -->
     <div class="section">
         <div class="section-header">
@@ -573,6 +693,7 @@
         </div>
     </div>
 
+
 </div>
 
 <!-- 프로필 수정 모달 -->
@@ -608,6 +729,73 @@
 </div>
 
 <script>
+    function loadMatches(btn) {
+        var riotId = btn.dataset.riotId;
+        var riotTag = btn.dataset.riotTag;
+        var progress = document.getElementById('matchProgress');
+        var list = document.getElementById('matchList');
+
+        btn.disabled = true;
+        btn.textContent = '불러오는 중...';
+        progress.classList.add('active');
+        list.innerHTML = '';
+
+        fetch('/api/riot/matches?riotId=' + encodeURIComponent(riotId) + '&riotTag=' + encodeURIComponent(riotTag))
+            .then(function(r) { return r.json(); })
+            .then(function(matches) {
+                progress.classList.remove('active');
+                btn.textContent = '새로고침';
+                btn.disabled = false;
+
+                if (!matches.length) {
+                    list.innerHTML = '<div class="empty">전적 정보가 없습니다.</div>';
+                    return;
+                }
+
+                var html = '<div class="match-list">';
+                matches.forEach(function(m) {
+                    var cls = m.win ? 'win' : 'lose';
+                    var items = (m.itemImageUrls || []).map(function(url) {
+                        return '<img src="' + url + '" alt="item">';
+                    }).join('');
+                    html += '<div class="match-item ' + cls + '">'
+                        + '<img class="match-champ" src="' + m.championImageUrl + '" alt="' + m.championName + '">'
+                        + '<div class="match-main">'
+                        + '<div class="match-top">'
+                        + '<span class="match-champ-name">' + m.championName + '</span>'
+                        + '<span class="match-mode">' + m.gameMode + '</span>'
+                        + '</div>'
+                        + '<div class="match-kda">'
+                        + '<span class="k">' + m.kills + '</span>'
+                        + ' / <span class="d">' + m.deaths + '</span>'
+                        + ' / <span class="a">' + m.assists + '</span>'
+                        + '</div>'
+                        + '<div class="match-items">' + items + '</div>'
+                        + '</div>'
+                        + '<div class="match-right">'
+                        + '<span class="match-result ' + cls + '">' + (m.win ? '승리' : '패배') + '</span>'
+                        + '<span class="match-date">' + formatMatchDate(m.playedAt) + '</span>'
+                        + '</div>'
+                        + '</div>';
+                });
+                html += '</div>';
+                list.innerHTML = html;
+            })
+            .catch(function() {
+                progress.classList.remove('active');
+                btn.textContent = '불러오기';
+                btn.disabled = false;
+                list.innerHTML = '<div class="empty">전적을 불러올 수 없습니다.</div>';
+            });
+    }
+
+    function formatMatchDate(dateStr) {
+        if (!dateStr) return '';
+        var d = new Date(dateStr);
+        var p = function(n) { return n < 10 ? '0' + n : n; };
+        return (d.getMonth()+1) + '.' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+    }
+
     function openModal() {
         document.getElementById('profileModal').classList.add('active');
     }

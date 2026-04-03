@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriBuilder;
 
 import java.util.List;
 
@@ -49,13 +50,15 @@ public class RiotClient {
                 .body(SummonerDto.class);
     }
 
-    /** puuid로 최근 매치 ID 목록 조회 */
-    public List<String> getMatchIds(String puuid, int count) {
+    /** puuid로 최근 매치 ID 목록 조회 (queue: 420=솔랭, 440=자랭, null=전체) */
+    public List<String> getMatchIds(String puuid, int count, Integer queue) {
         return asiaClient.get()
-                .uri(uri -> uri
-                        .path("/lol/match/v5/matches/by-puuid/{puuid}/ids")
-                        .queryParam("count", count)
-                        .build(puuid))
+                .uri(uri -> {
+                    UriBuilder builder = uri.path("/lol/match/v5/matches/by-puuid/{puuid}/ids")
+                            .queryParam("count", count);
+                    if (queue != null) builder.queryParam("queue", queue);
+                    return builder.build(puuid);
+                })
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
     }

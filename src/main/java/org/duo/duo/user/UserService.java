@@ -69,6 +69,11 @@ public class UserService {
         return UserResponse.from(user);
     }
 
+    public User getUserEntity(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+    }
+
     @Transactional
     public void updateProfile(User user, String bio, MultipartFile profileImage) {
         String imagePath = null;

@@ -11,6 +11,10 @@ public class UserResponse {
     private Long userId;
     private String username;
     private String name;
+    private String bio;
+    private String profileImage;
+    private String riotId;
+    private String riotTag;
     private Role role;
     private LocalDateTime createdAt;
 
@@ -19,6 +23,10 @@ public class UserResponse {
                 .userId(user.getUserId())
                 .username(user.getUsername())
                 .name(user.getName())
+                .bio(user.getBio())
+                .profileImage(user.getProfileImage())
+                .riotId(user.getRiotId())
+                .riotTag(user.getRiotTag())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
                 .build();

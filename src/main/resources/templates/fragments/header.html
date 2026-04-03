@@ -3,6 +3,29 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <header th:fragment="header">
+    <style>
+        .notif-wrap { position: relative; }
+        .notif-btn { background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; color: #6b7280; transition: color 0.15s; }
+        .notif-btn:hover { color: #1f2937; }
+        .notif-btn svg { width: 18px; height: 18px; transition: color 0.2s; }
+        .notif-btn.has-notif svg { color: #ef4444; }
+        .notif-dropdown { display: none; position: absolute; top: calc(100% + 12px); right: 0; width: 260px; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); z-index: 200; overflow: hidden; }
+        .notif-dropdown.active { display: block; }
+        .notif-dropdown-header { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px 9px; border-bottom: 1px solid #f3f4f6; }
+        .notif-dropdown-title { font-size: 12px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; }
+        .notif-read-all { font-size: 11px; color: #818cf8; cursor: pointer; font-weight: 600; background: none; border: none; font-family: inherit; padding: 0; }
+        .notif-read-all:hover { text-decoration: underline; }
+        .notif-list { max-height: 280px; overflow-y: auto; }
+        .notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; text-decoration: none; border-bottom: 1px solid #f9fafb; transition: background 0.1s; color: inherit; }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-item:hover { background: #fafaff; }
+        .notif-dot { width: 6px; height: 6px; border-radius: 50%; background: #818cf8; flex-shrink: 0; margin-top: 5px; }
+        .notif-item.read .notif-dot { background: #e5e7eb; }
+        .notif-msg { font-size: 13px; color: #374151; line-height: 1.5; flex: 1; }
+        .notif-item.read .notif-msg { color: #9ca3af; }
+        .notif-time { font-size: 11px; color: #d1d5db; margin-top: 2px; }
+        .notif-empty { text-align: center; padding: 24px 14px; font-size: 12px; color: #d1d5db; }
+    </style>
     <a th:href="@{/boards}" class="logo">Du<span>o</span></a>
     <nav class="header-nav">
         <div sec:authorize="isAuthenticated()">
@@ -12,6 +35,28 @@
         <div sec:authorize="isAuthenticated()">
             <a th:href="@{/profile}">마이페이지</a>
         </div>
+        <div sec:authorize="isAuthenticated()" class="nav-divider"></div>
+
+        <!-- 알림 -->
+        <div sec:authorize="isAuthenticated()" class="notif-wrap" id="notifWrap">
+            <button class="notif-btn" id="notifBtn" onclick="toggleNotif(event)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+            </button>
+            <div class="notif-dropdown" id="notifDropdown">
+                <div class="notif-dropdown-header">
+                    <span class="notif-dropdown-title">알림</span>
+                    <button class="notif-read-all" onclick="markAllRead()">모두 읽음</button>
+                </div>
+                <div class="notif-list" id="notifList">
+                    <div class="notif-empty">새 알림이 없습니다.</div>
+                </div>
+            </div>
+        </div>
+
+        <div sec:authorize="isAuthenticated()" class="nav-divider"></div>
         <div sec:authorize="isAuthenticated()">
             <a th:href="@{/logout}">로그아웃</a>
         </div>
@@ -23,6 +68,115 @@
             <a th:href="@{/signup}">회원가입</a>
         </div>
     </nav>
+
+    <script>
+        (function () {
+            var btn = document.getElementById('notifBtn');
+            var list = document.getElementById('notifList');
+            if (!btn) return;
+
+            var unreadCount = 0;
+
+            // SSE 연결
+            var sse;
+            function connectSse() {
+                if (sse) sse.close();
+                sse = new EventSource('/api/notifications/subscribe');
+                sse.addEventListener('notification', function (e) {
+                    var notif = JSON.parse(e.data);
+                    prependNotif(notif);
+                    unreadCount++;
+                    btn.classList.add('has-notif');
+                });
+                sse.onerror = function () {
+                    sse.close();
+                    setTimeout(connectSse, 3000);
+                };
+            }
+            connectSse();
+
+            // 초기 로드
+            fetch('/api/notifications')
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.length === 0) return;
+                    list.innerHTML = '';
+                    data.forEach(function(n) { appendNotif(n); });
+                    unreadCount = data.length;
+                    btn.classList.add('has-notif');
+                });
+
+            function prependNotif(notif) {
+                if (list.querySelector('.notif-empty')) list.innerHTML = '';
+                list.insertBefore(buildItem(notif), list.firstChild);
+            }
+
+            function appendNotif(notif) {
+                if (list.querySelector('.notif-empty')) list.innerHTML = '';
+                list.appendChild(buildItem(notif));
+            }
+
+            function buildItem(notif) {
+                var item = document.createElement('a');
+                item.className = 'notif-item ' + (notif.read ? 'read' : '');
+                item.href = notif.url || '#';
+                item.dataset.id = notif.notificationId;
+                item.innerHTML =
+                    '<div class="notif-dot"></div>' +
+                    '<div>' +
+                    '<div class="notif-msg">' + escapeHtml(notif.message) + '</div>' +
+                    '<div class="notif-time">' + formatTime(notif.createdAt) + '</div>' +
+                    '</div>';
+                item.addEventListener('click', function () { markRead(notif.notificationId, item); });
+                return item;
+            }
+
+            function markRead(id, el) {
+                if (el.classList.contains('read')) return;
+                fetch('/api/notifications/' + id + '/read', { method: 'POST' });
+                el.classList.add('read');
+                unreadCount = Math.max(0, unreadCount - 1);
+                if (unreadCount === 0) btn.classList.remove('has-notif');
+            }
+
+            window.markAllRead = function () {
+                fetch('/api/notifications/read-all', { method: 'POST' }).then(function () {
+                    list.querySelectorAll('.notif-item').forEach(function (el) { el.classList.add('read'); });
+                    unreadCount = 0;
+                    btn.classList.remove('has-notif');
+                });
+            };
+
+            function escapeHtml(str) {
+                var d = document.createElement('div');
+                d.textContent = str;
+                return d.innerHTML;
+            }
+
+            function formatTime(dateStr) {
+                if (!dateStr) return '';
+                var d = new Date(dateStr);
+                var diff = Math.floor((new Date() - d) / 1000);
+                if (diff < 60) return '방금 전';
+                if (diff < 3600) return Math.floor(diff / 60) + '분 전';
+                if (diff < 86400) return Math.floor(diff / 3600) + '시간 전';
+                var p = function(n) { return n < 10 ? '0' + n : n; };
+                return d.getFullYear() + '.' + p(d.getMonth()+1) + '.' + p(d.getDate());
+            }
+        })();
+
+        function toggleNotif(e) {
+            e.stopPropagation();
+            document.getElementById('notifDropdown').classList.toggle('active');
+        }
+
+        document.addEventListener('click', function (e) {
+            var wrap = document.getElementById('notifWrap');
+            if (wrap && !wrap.contains(e.target)) {
+                document.getElementById('notifDropdown').classList.remove('active');
+            }
+        });
+    </script>
 </header>
 </body>
 </html>

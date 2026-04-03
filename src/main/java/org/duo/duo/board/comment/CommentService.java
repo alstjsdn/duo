@@ -8,8 +8,10 @@ import org.duo.duo.board.Board;
 import org.duo.duo.board.BoardRepository;
 import org.duo.duo.board.BoardResponse;
 import org.duo.duo.common.constants.PageConstants;
+import org.duo.duo.notification.event.CommentCreatedEvent;
 import org.duo.duo.user.Role;
 import org.duo.duo.user.User;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Page<CommentResponse> findByBoardId(Long boardId, Pageable pageable) {
         return commentRepository.findByBoard_BoardIdAndParentIsNull(boardId, pageable)
@@ -37,12 +40,14 @@ public class CommentService {
         Comment parent = (parentId != null)
                 ? commentRepository.findById(parentId).orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."))
                 : null;
-        commentRepository.save(Comment.builder()
+        Comment comment = commentRepository.save(Comment.builder()
                 .board(board)
                 .user(user)
                 .parent(parent)
                 .content(request.getContent())
                 .build());
+
+        eventPublisher.publishEvent(new CommentCreatedEvent(comment));
     }
 
     @Transactional
