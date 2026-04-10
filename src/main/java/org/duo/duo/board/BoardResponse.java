@@ -3,6 +3,7 @@ package org.duo.duo.board;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class BoardResponse {
@@ -16,6 +17,10 @@ public class BoardResponse {
     private String content;
     private int viewCount;
     private LocalDateTime createdAt;
+    private BoardStatus status;
+    private GameLine myLine;
+    private Integer memberCount;
+    private List<GameLine> neededLines;
 
     public static BoardResponse from(Board board) {
         BoardResponse response = new BoardResponse();
@@ -29,6 +34,10 @@ public class BoardResponse {
         response.content = board.getContent();
         response.viewCount = board.getViewCount();
         response.createdAt = board.getCreatedAt();
+        response.status = board.getStatus();
+        response.myLine = board.getMyLine();
+        response.memberCount = board.getMemberCount();
+        response.neededLines = new java.util.ArrayList<>(board.getNeededLines());
         return response;
     }
 }

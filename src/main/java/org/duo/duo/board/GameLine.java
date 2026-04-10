@@ -5,10 +5,13 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum BoardType {
+public enum GameLine {
 
-    RANK("랭크"),
-    CLASSIC("일반");
+    TOP("탑"),
+    JUNGLE("정글"),
+    MID("미드"),
+    ADC("원딜"),
+    SUPPORT("서폿");
 
     private final String name;
 }

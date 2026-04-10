@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum BoardType {
+public enum BoardStatus {
 
-    RANK("랭크"),
-    CLASSIC("일반");
+    RECRUITING("모집중"),
+    COMPLETED("모집완료");
 
     private final String name;
 }

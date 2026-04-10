@@ -5,8 +5,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Slf4j
 @Component
@@ -14,43 +16,44 @@ public class SseEmitters {
 
     private static final long TIMEOUT = 30 * 60 * 1000L; // 30분
 
-    private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private final Map<Long, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
 
     public SseEmitter add(Long userId) {
         SseEmitter emitter = new SseEmitter(TIMEOUT);
-        emitters.put(userId, emitter);
+        emitters.computeIfAbsent(userId, id -> new CopyOnWriteArrayList<>()).add(emitter);
 
-        emitter.onCompletion(() -> {
-            log.debug("SSE 연결 종료: userId={}", userId);
-            emitters.remove(userId);
-        });
-        emitter.onTimeout(() -> {
-            log.debug("SSE 타임아웃: userId={}", userId);
-            emitters.remove(userId);
-        });
-        emitter.onError(e -> {
-            log.debug("SSE 에러: userId={}", userId);
-            emitters.remove(userId);
-        });
+        Runnable cleanup = () -> {
+            List<SseEmitter> list = emitters.get(userId);
+            if (list != null) {
+                list.remove(emitter);
+                if (list.isEmpty()) emitters.remove(userId);
+            }
+        };
 
-        // 연결 직후 더미 이벤트 (503 방지)
+        emitter.onCompletion(() -> { log.debug("SSE 연결 종료: userId={}", userId); cleanup.run(); });
+        emitter.onTimeout(()  -> { log.debug("SSE 타임아웃: userId={}", userId);  cleanup.run(); });
+        emitter.onError(e     -> { log.debug("SSE 에러: userId={}", userId);      cleanup.run(); });
+
         try {
             emitter.send(SseEmitter.event().name("connect").data("connected"));
         } catch (IOException e) {
-            emitters.remove(userId);
+            cleanup.run();
         }
 
         return emitter;
     }
 
     public void send(Long userId, Object data) {
-        SseEmitter emitter = emitters.get(userId);
-        if (emitter != null) {
+        List<SseEmitter> list = emitters.get(userId);
+        if (list == null || list.isEmpty()) return;
+
+        for (SseEmitter emitter : list) {
             try {
                 emitter.send(SseEmitter.event().name("notification").data(data));
             } catch (IOException e) {
-                emitters.remove(userId);
+                list.remove(emitter);
             }
         }
+        if (list.isEmpty()) emitters.remove(userId);
     }
 }

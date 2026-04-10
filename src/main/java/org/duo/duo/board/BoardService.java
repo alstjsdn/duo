@@ -27,7 +27,8 @@ public class BoardService {
         Specification<Board> spec = Specification
                 .where(BoardSpecification.hasType(request.getType()))
                 .and(BoardSpecification.titleContains(request.getTitle()))
-                .and(BoardSpecification.contentContains(request.getContent()));
+                .and(BoardSpecification.contentContains(request.getContent()))
+                .and(BoardSpecification.neededLineContains(request.getNeededLine()));
 
         return boardRepository.findAll(spec, pageable)
                 .map(BoardResponse::from);

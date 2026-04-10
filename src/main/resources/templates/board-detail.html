@@ -92,10 +92,240 @@
             margin-bottom: 12px;
         }
 
-        .badge-QUESTION { background: #eff0ff; color: #6366f1; }
-        .badge-FREE     { background: #ecfdf5; color: #059669; }
         .badge-RANK     { background: #fef3e2; color: #d97706; }
         .badge-CLASSIC  { background: #f5f0ff; color: #8b5cf6; }
+
+        /* 게임 정보 */
+        .game-info {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid #f0eeff;
+        }
+
+        .game-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .game-info-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #9ca3af;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .game-info-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        .line-tags {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .line-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            background: #eff0ff;
+            color: #6366f1;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* 파티원 현황 */
+        .party-section {
+            background: #fff;
+            border: 1px solid #e8e5f3;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .party-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #6366f1;
+            padding: 14px 20px 12px;
+            border-bottom: 1px solid #f0eeff;
+            background: #fafaff;
+        }
+
+        .party-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            gap: 14px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .party-row:last-child { border-bottom: none; }
+
+        .party-line-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            padding: 3px 0;
+            background: #eff0ff;
+            color: #6366f1;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .party-user-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .party-user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .party-user-name:hover { color: #818cf8; }
+
+        .party-riot-id {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .party-empty {
+            flex: 1;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        .party-status-approved {
+            font-size: 12px;
+            font-weight: 600;
+            color: #16a34a;
+            background: #f0fdf4;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .party-status-pending {
+            font-size: 12px;
+            font-weight: 600;
+            color: #9ca3af;
+            background: #f3f4f6;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .btn-join {
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            padding: 5px 14px;
+            border-radius: 8px;
+            border: 1.5px solid #818cf8;
+            background: #fff;
+            color: #818cf8;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-join:hover { background: #818cf8; color: #fff; }
+
+        /* 요청 목록 (작성자용) */
+        .pending-section {
+            background: #fff;
+            border: 1px solid #e8e5f3;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .pending-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #d97706;
+            padding: 14px 20px 12px;
+            border-bottom: 1px solid #f0eeff;
+            background: #fafaff;
+        }
+
+        .pending-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .pending-row:last-child { border-bottom: none; }
+
+        .pending-user-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .pending-user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .pending-user-name:hover { color: #818cf8; }
+
+        .pending-riot-id {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .btn-approve {
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            padding: 5px 12px;
+            border-radius: 7px;
+            border: none;
+            background: #818cf8;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-approve:hover { background: #7070f0; }
+
+        .btn-reject-req {
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            padding: 5px 12px;
+            border-radius: 7px;
+            border: 1.5px solid #fecaca;
+            background: #fff;
+            color: #dc2626;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-reject-req:hover { background: #fef2f2; }
 
         .post-title {
             font-size: 22px;
@@ -189,7 +419,15 @@
 
         .btn-delete:hover { background: #fef2f2; }
 
-        .action-btns { display: flex; gap: 8px; }
+        .action-btns { display: flex; gap: 8px; align-items: center; }
+
+        .edit-blocked-msg {
+            font-size: 12px;
+            color: #9ca3af;
+            background: #f3f4f6;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
 
         /* 작성자 프로필 */
         .author-card {
@@ -540,6 +778,25 @@
                     <span class="meta-value" th:text="${board.viewCount}"></span>
                 </div>
             </div>
+
+            <!-- 게임 정보 -->
+            <div class="game-info"
+                 th:if="${board.myLine != null or board.memberCount != null or (board.neededLines != null and !board.neededLines.empty)}">
+                <div class="game-info-item" th:if="${board.myLine != null}">
+                    <span class="game-info-label">내 라인</span>
+                    <span class="game-info-value" th:text="${board.myLine.name}"></span>
+                </div>
+                <div class="game-info-item" th:if="${board.memberCount != null}">
+                    <span class="game-info-label">인원수</span>
+                    <span class="game-info-value" th:text="${board.memberCount} + '명'"></span>
+                </div>
+                <div class="game-info-item" th:if="${board.neededLines != null and !board.neededLines.empty}">
+                    <span class="game-info-label">필요한 라인</span>
+                    <div class="line-tags">
+                        <span class="line-tag" th:each="line : ${board.neededLines}" th:text="${line.name}"></span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="post-body" th:utext="${board.content}"></div>
@@ -548,13 +805,90 @@
             <a th:href="@{/boards}" class="btn btn-back">← 목록으로</a>
             <div class="action-btns"
                  th:if="${board.username == #authentication?.name or #authentication?.authorities.![authority].contains('ROLE_ADMIN')}">
-                <a th:href="@{/boards/{id}/edit(id=${board.boardId})}" class="btn btn-edit">수정</a>
+                <span th:if="${hasApproved}" class="edit-blocked-msg">승인된 파티원이 있어 수정할 수 없습니다</span>
+                <a th:unless="${hasApproved}"
+                   th:href="@{/boards/{id}/edit(id=${board.boardId})}" class="btn btn-edit">수정</a>
                 <form th:action="@{/boards/{id}/delete(id=${board.boardId})}" method="post" style="display:inline;">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <button type="submit" class="btn btn-delete"
                             onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- 파티원 현황 -->
+    <div class="party-section"
+         th:if="${board.neededLines != null and !board.neededLines.empty}">
+        <div class="party-section-title">
+            파티원 현황
+            <span th:text="${board.status.name}"
+                  th:style="${board.status.name() == 'COMPLETED'} ? 'color:#16a34a;background:#f0fdf4;padding:2px 10px;border-radius:10px;font-size:11px;margin-left:6px;' : 'color:#6366f1;background:#eff0ff;padding:2px 10px;border-radius:10px;font-size:11px;margin-left:6px;'"></span>
+        </div>
+        <div th:each="line : ${board.neededLines}">
+            <div class="party-row">
+                <span class="party-line-badge" th:text="${line.name}"></span>
+
+                <!-- 승인된 유저 있음 -->
+                <th:block th:with="approved=${approvedByLine.get(line)}"
+                          th:if="${approvedByLine.containsKey(line)}">
+                    <div class="party-user-info">
+                        <a class="party-user-name"
+                           th:href="@{/profile/{username}(username=${approved.username})}"
+                           th:text="${approved.name}"
+                           onclick="window.open(this.href,'_blank','noopener,width=1100,height=800'); return false;"></a>
+                        <span class="party-riot-id" th:text="${approved.riotId + '#' + approved.riotTag}"></span>
+                    </div>
+                    <span class="party-status-approved">승인됨</span>
+                </th:block>
+
+                <!-- 빈 슬롯 -->
+                <th:block th:unless="${approvedByLine.containsKey(line)}">
+                    <span class="party-empty">모집중</span>
+
+                    <!-- 본인이 이미 요청중 -->
+                    <span class="party-status-pending"
+                          sec:authorize="isAuthenticated()"
+                          th:if="${myPendingLines != null and myPendingLines.contains(line)}">요청중</span>
+
+                    <!-- 참가 요청 버튼 (비작성자, 미요청) -->
+                    <form th:action="@{/boards/{id}/join(id=${board.boardId})}" method="post"
+                          sec:authorize="isAuthenticated()"
+                          th:if="${board.username != #authentication?.name
+                                  and (myPendingLines == null or !myPendingLines.contains(line))}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" name="gameLine" th:value="${line.name()}"/>
+                        <button type="submit" class="btn-join">참가 요청</button>
+                    </form>
+                </th:block>
+            </div>
+        </div>
+    </div>
+
+    <!-- 참가 요청 목록 (작성자만) -->
+    <div class="pending-section"
+         th:if="${board.username == #authentication?.name and !pendingRequests.empty}">
+        <div class="pending-section-title">
+            참가 요청 목록
+            <span th:text="'(' + ${pendingRequests.size()} + ')'"></span>
+        </div>
+        <div class="pending-row" th:each="req : ${pendingRequests}">
+            <span class="party-line-badge" th:text="${req.gameLine.name}"></span>
+            <div class="pending-user-info">
+                <a class="pending-user-name"
+                   th:href="@{/profile/{username}(username=${req.username})}"
+                   th:text="${req.name}"
+                   onclick="window.open(this.href,'_blank','noopener,width=1100,height=800'); return false;"></a>
+                <span class="pending-riot-id" th:text="${req.riotId + '#' + req.riotTag}"></span>
+            </div>
+            <form th:action="@{/boards/{boardId}/join/{reqId}/approve(boardId=${board.boardId}, reqId=${req.id})}" method="post" style="display:inline;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn-approve">승인</button>
+            </form>
+            <form th:action="@{/boards/{boardId}/join/{reqId}/reject(boardId=${board.boardId}, reqId=${req.id})}" method="post" style="display:inline;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn-reject-req">거절</button>
+            </form>
         </div>
     </div>
 

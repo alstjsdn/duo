@@ -95,6 +95,14 @@
             }
             connectSse();
 
+            // 페이지 이동/닫기 시 SSE 명시적 종료
+            window.addEventListener('beforeunload', function () {
+                if (sse) {
+                    sse.close();
+                    sse = null;
+                }
+            });
+
             // 초기 로드
             fetch('/api/notifications')
                 .then(function (r) { return r.json(); })

@@ -197,14 +197,41 @@
             font-weight: 600;
         }
 
-        .badge-QUESTION { background: #eff0ff; color: #6366f1; }
-        .badge-FREE     { background: #ecfdf5; color: #059669; }
         .badge-RANK     { background: #fef3e2; color: #d97706; }
         .badge-CLASSIC  { background: #f5f0ff; color: #8b5cf6; }
+        .badge-RECRUITING { background: #eff0ff; color: #6366f1; margin-top: 5px; display: block; width: fit-content; }
+        .badge-COMPLETED  { background: #f0fdf4; color: #16a34a; margin-top: 5px; display: block; width: fit-content; }
 
         .view-count { color: #9ca3af; font-size: 13px; }
         .date       { color: #9ca3af; font-size: 13px; }
         .author     { color: #6b7280; font-size: 13px; font-weight: 500; }
+
+        .line-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+
+        .line-info-label {
+            font-size: 11px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .line-tag {
+            display: inline-block;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .line-tag-my  { background: #eff0ff; color: #6366f1; }
+        .line-tag-need { background: #f0fdf4; color: #16a34a; }
+
+        .line-divider { color: #d1d5db; font-size: 11px; }
 
         .empty {
             text-align: center;
@@ -263,6 +290,13 @@
                     th:text="${t.name}"
                     th:selected="${t == search.type}"></option>
         </select>
+        <select name="neededLine">
+            <option value="" th:selected="${search.neededLine == null}">필요 라인 전체</option>
+            <option th:each="line : ${gameLines}"
+                    th:value="${line.name()}"
+                    th:text="${line.name}"
+                    th:selected="${line == search.neededLine}"></option>
+        </select>
         <input type="text" name="title" placeholder="제목 검색" th:value="${search.title}">
         <input type="text" name="content" placeholder="내용 검색" th:value="${search.content}">
         <button type="submit">검색</button>
@@ -290,11 +324,30 @@
                         <span class="badge"
                               th:classappend="'badge-' + ${board.type}"
                               th:text="${board.type.name}"></span>
+                        <span th:if="${board.neededLines != null and !board.neededLines.empty}"
+                              class="badge"
+                              th:classappend="'badge-' + ${board.status}"
+                              th:text="${board.status.name}"></span>
                     </td>
                     <td>
                         <a th:href="@{/boards/{id}(id=${board.boardId})}"
                            class="title-link"
                            th:text="${board.title}"></a>
+                        <div class="line-info"
+                             th:if="${board.myLine != null or (board.neededLines != null and !board.neededLines.empty)}">
+                            <th:block th:if="${board.myLine != null}">
+                                <span class="line-info-label">내 라인</span>
+                                <span class="line-tag line-tag-my" th:text="${board.myLine.name}"></span>
+                            </th:block>
+                            <span class="line-divider"
+                                  th:if="${board.myLine != null and board.neededLines != null and !board.neededLines.empty}">·</span>
+                            <th:block th:if="${board.neededLines != null and !board.neededLines.empty}">
+                                <span class="line-info-label">필요</span>
+                                <span class="line-tag line-tag-need"
+                                      th:each="line : ${board.neededLines}"
+                                      th:text="${line.name}"></span>
+                            </th:block>
+                        </div>
                     </td>
                     <td class="author" th:text="${board.author}"></td>
                     <td class="view-count" th:text="${board.viewCount}"></td>
@@ -306,15 +359,15 @@
 
     <div class="pagination" th:if="${boards.totalPages > 0}">
         <a th:classappend="${boards.first} ? 'disabled'"
-           th:href="@{/boards(page=${boards.number - 1}, type=${search.type}, title=${search.title}, content=${search.content})}">&lsaquo;</a>
+           th:href="@{/boards(page=${boards.number - 1}, type=${search.type}, neededLine=${search.neededLine}, title=${search.title}, content=${search.content})}">&lsaquo;</a>
         <th:block th:each="i : ${#numbers.sequence(0, boards.totalPages - 1)}">
             <a th:if="${i != boards.number}"
-               th:href="@{/boards(page=${i}, type=${search.type}, title=${search.title}, content=${search.content})}"
+               th:href="@{/boards(page=${i}, type=${search.type}, neededLine=${search.neededLine}, title=${search.title}, content=${search.content})}"
                th:text="${i + 1}"></a>
             <span th:if="${i == boards.number}" class="active" th:text="${i + 1}"></span>
         </th:block>
         <a th:classappend="${boards.last} ? 'disabled'"
-           th:href="@{/boards(page=${boards.number + 1}, type=${search.type}, title=${search.title}, content=${search.content})}">&rsaquo;</a>
+           th:href="@{/boards(page=${boards.number + 1}, type=${search.type}, neededLine=${search.neededLine}, title=${search.title}, content=${search.content})}">&rsaquo;</a>
     </div>
 
 </div>

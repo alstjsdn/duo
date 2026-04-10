@@ -11,4 +11,5 @@ public class BoardSearchRequest {
     private BoardType type;
     private String title;
     private String content;
+    private GameLine neededLine;
 }

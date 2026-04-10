@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 public enum NotificationType {
 
     COMMENT("댓글"),
-    REPLY("답글");
+    REPLY("답글"),
+    JOIN_REQUEST("참가 요청"),
+    JOIN_APPROVED("참가 승인"),
+    JOIN_REJECTED("참가 거절");
 
     private final String name;
 }

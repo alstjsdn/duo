@@ -13,6 +13,7 @@ import org.duo.duo.board.comment.Comment;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,6 +37,25 @@ public class Board {
     @Column
     private int viewCount;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private BoardStatus status = BoardStatus.RECRUITING;
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    private GameLine myLine;
+
+    @Column
+    private Integer memberCount;
+
+    @Builder.Default
+    @ElementCollection
+    @CollectionTable(name = "board_needed_lines", joinColumns = @JoinColumn(name = "board_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "line")
+    private List<GameLine> neededLines = new ArrayList<>();
+
     @Builder.Default
     @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private java.util.List<Comment> comments = new ArrayList<>();
@@ -46,6 +66,10 @@ public class Board {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    public void updateStatus(BoardStatus boardStatus) {
+        this.status = boardStatus;
+    }
+
     public void increaseViewCount() {
         this.viewCount++;
     }
@@ -54,15 +78,27 @@ public class Board {
         this.type = request.getType();
         this.title = request.getTitle();
         this.content = request.getContent();
+        this.myLine = request.getMyLine();
+        this.memberCount = request.getMemberCount();
+        this.neededLines.clear();
+        if (request.getNeededLines() != null) {
+            this.neededLines.addAll(request.getNeededLines());
+        }
     }
 
     public static Board toEntity(BoardRequest request, User user) {
-        return Board.builder()
+        Board board = Board.builder()
                 .user(user)
                 .type(request.getType())
                 .title(request.getTitle())
                 .content(request.getContent())
+                .myLine(request.getMyLine())
+                .memberCount(request.getMemberCount())
                 .viewCount(0)
                 .build();
+        if (request.getNeededLines() != null) {
+            board.neededLines.addAll(request.getNeededLines());
+        }
+        return board;
     }
 }

@@ -22,7 +22,7 @@ public class Notification {
     @JoinColumn(name = "user_id", nullable = false)
     private User receiver;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(30)")
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 

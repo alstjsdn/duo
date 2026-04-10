@@ -185,6 +185,72 @@
         }
 
         .btn-secondary:hover { border-color: #818cf8; color: #1f2937; }
+
+        /* 게임 옵션 섹션 */
+        .game-options {
+            display: flex;
+            background: #fafaff;
+            border: 1.5px solid #e8e5f3;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            gap: 18px;
+            flex-direction: column;
+        }
+
+        .game-options-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #818cf8;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .game-options-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .game-options-row .form-group {
+            flex: 1;
+            min-width: 140px;
+            margin-bottom: 0;
+        }
+
+        .line-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 2px;
+        }
+
+        .line-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4b5563;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+
+        .line-checkbox-label:hover { border-color: #818cf8; color: #818cf8; }
+
+        .line-checkbox-label input[type="checkbox"] { display: none; }
+
+        .line-checkbox-label.checked {
+            background: #818cf8;
+            border-color: #818cf8;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -208,6 +274,45 @@
                             th:text="${t.name}"></option>
                 </select>
                 <p class="error-msg" th:if="${#fields.hasErrors('type')}" th:errors="*{type}"></p>
+            </div>
+
+            <!-- 게임 옵션 -->
+            <div class="game-options">
+                <div class="game-options-title">게임 설정</div>
+                <div class="game-options-row">
+                    <div class="form-group">
+                        <label for="myLine">내 라인</label>
+                        <select id="myLine" name="myLine" th:field="*{myLine}">
+                            <option value="">라인 선택</option>
+                            <option th:each="line : ${gameLines}"
+                                    th:value="${line.name()}"
+                                    th:text="${line.name}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="memberCount">원하는 인원수</label>
+                        <select id="memberCount" name="memberCount" th:field="*{memberCount}" onchange="onMemberCountChange(this.value)">
+                            <option value="">인원 선택</option>
+                            <option value="2">2명</option>
+                            <option value="3">3명</option>
+                            <option value="4">4명</option>
+                            <option value="5">5명</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>필요한 라인 <span id="neededLinesHint" style="font-weight:400;color:#9ca3af;text-transform:none;letter-spacing:0;"></span></label>
+                    <div class="line-checkboxes" id="neededLinesGroup">
+                        <label th:each="line : ${gameLines}" class="line-checkbox-label"
+                               th:classappend="${boardRequest.neededLines != null and boardRequest.neededLines.contains(line)} ? ' checked' : ''">
+                            <input type="checkbox" name="neededLines"
+                                   th:value="${line.name()}"
+                                   th:checked="${boardRequest.neededLines != null and boardRequest.neededLines.contains(line)}"
+                                   onchange="toggleCheckStyle(this)">
+                            <span th:text="${line.name}"></span>
+                        </label>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">
@@ -267,6 +372,73 @@
             });
         })
         .catch(error => console.error(error));
+
+    function getMaxNeeded() {
+        var val = parseInt(document.getElementById('memberCount').value);
+        return isNaN(val) ? 0 : val - 1;
+    }
+
+    function getCheckedCount() {
+        return document.querySelectorAll('#neededLinesGroup input[type="checkbox"]:checked').length;
+    }
+
+    function updateNeededLinesState() {
+        var max = getMaxNeeded();
+        var checked = getCheckedCount();
+        var hint = document.getElementById('neededLinesHint');
+
+        if (max <= 0) {
+            hint.textContent = '(인원수를 먼저 선택하세요)';
+        } else {
+            hint.textContent = '(' + checked + ' / ' + max + '개 선택)';
+        }
+
+        document.querySelectorAll('#neededLinesGroup input[type="checkbox"]').forEach(function(cb) {
+            var label = cb.closest('.line-checkbox-label');
+            if (!cb.checked && checked >= max) {
+                cb.disabled = true;
+                label.style.opacity = '0.4';
+                label.style.cursor = 'not-allowed';
+            } else {
+                cb.disabled = false;
+                label.style.opacity = '';
+                label.style.cursor = '';
+            }
+        });
+    }
+
+    function onMemberCountChange(val) {
+        // 인원수가 바뀌면 초과된 체크 해제
+        var max = parseInt(val);
+        if (isNaN(max)) max = 0;
+        var limit = max - 1;
+        var checked = 0;
+        document.querySelectorAll('#neededLinesGroup input[type="checkbox"]').forEach(function(cb) {
+            if (cb.checked) {
+                checked++;
+                if (checked > limit) {
+                    cb.checked = false;
+                    cb.closest('.line-checkbox-label').classList.remove('checked');
+                }
+            }
+        });
+        updateNeededLinesState();
+    }
+
+    function toggleCheckStyle(checkbox) {
+        var label = checkbox.closest('.line-checkbox-label');
+        if (checkbox.checked) {
+            label.classList.add('checked');
+        } else {
+            label.classList.remove('checked');
+        }
+        updateNeededLinesState();
+    }
+
+    // 초기 상태 설정
+    (function() {
+        updateNeededLinesState();
+    })();
 </script>
 
 </body>
