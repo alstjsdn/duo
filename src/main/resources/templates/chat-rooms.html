@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 채팅방 - Duo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <style>
+        .container {
+            max-width: 720px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .room-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .room-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: #ffffff;
+            border: 1px solid #e8e5f3;
+            border-radius: 12px;
+            text-decoration: none;
+            color: inherit;
+            transition: box-shadow 0.15s, border-color 0.15s;
+            gap: 12px;
+        }
+
+        .room-card:hover {
+            border-color: #818cf8;
+            box-shadow: 0 2px 8px rgba(129,140,248,0.1);
+        }
+
+        .room-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .room-top {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 5px;
+            flex-wrap: wrap;
+        }
+
+        .room-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .badge-RANK       { background: #fef3e2; color: #d97706; }
+        .badge-CLASSIC    { background: #f5f0ff; color: #8b5cf6; }
+        .badge-RECRUITING { background: #eff0ff; color: #6366f1; }
+        .badge-COMPLETED  { background: #f0fdf4; color: #16a34a; }
+        .badge-owner      { background: #fef2f2; color: #ef4444; }
+        .badge-member     { background: #f0f9ff; color: #0284c7; }
+
+        .room-last-msg {
+            font-size: 13px;
+            color: #9ca3af;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .room-last-msg.empty {
+            font-style: italic;
+        }
+
+        .room-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .room-time {
+            font-size: 11px;
+            color: #d1d5db;
+        }
+
+        .btn-enter {
+            padding: 6px 14px;
+            background: #818cf8;
+            color: #ffffff;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: background 0.15s;
+        }
+
+        .room-card:hover .btn-enter { background: #7070f0; }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state p { font-size: 14px; margin-bottom: 16px; }
+
+        .empty-state a {
+            display: inline-block;
+            padding: 9px 20px;
+            background: #818cf8;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<header th:replace="~{fragments/header :: header}"></header>
+
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">내 채팅방</h1>
+    </div>
+
+    <div class="room-list" th:if="${!rooms.isEmpty()}">
+        <a th:each="room : ${rooms}"
+           th:href="@{/chat/{boardId}(boardId=${room.boardId})}"
+           class="room-card">
+
+            <div class="room-info">
+                <div class="room-top">
+                    <span class="badge" th:classappend="'badge-' + ${room.boardType}" th:text="${room.boardTypeName}"></span>
+                    <span class="badge" th:classappend="'badge-' + ${room.boardStatus}" th:text="${room.boardStatusName}"></span>
+                    <span class="badge" th:classappend="${room.role == '방장'} ? 'badge-owner' : 'badge-member'" th:text="${room.role}"></span>
+                    <span class="room-title" th:text="${room.title}"></span>
+                </div>
+                <div th:if="${room.lastMessage != null}" class="room-last-msg" th:text="${room.lastMessage}"></div>
+                <div th:if="${room.lastMessage == null}" class="room-last-msg empty">아직 메시지가 없습니다.</div>
+            </div>
+
+            <div class="room-meta">
+                <span class="room-time"
+                      th:if="${room.lastMessageAt != null}"
+                      th:text="${#temporals.format(room.lastMessageAt, 'MM.dd HH:mm')}"></span>
+                <span class="btn-enter">입장</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="empty-state" th:if="${rooms.isEmpty()}">
+        <p>참여 중인 채팅방이 없습니다.</p>
+        <a th:href="@{/boards}">게시판 둘러보기</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -7,62 +7,12 @@
     <title>마이페이지 - Duo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background: #ffffff;
-            min-height: 100vh;
-            color: #1f2937;
-        }
-
-        header {
-            background: #ffffff;
-            padding: 0 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 56px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: 800;
-            color: #1f2937;
-            text-decoration: none;
-            letter-spacing: -0.5px;
-        }
-
-        .logo span { color: #818cf8; }
-
-        .header-nav {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            font-size: 14px;
-        }
-
-        .header-nav span { color: #9ca3af; }
-
-        .header-nav a {
-            color: #6b7280;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.15s;
-        }
-
-        .header-nav a:hover { color: #1f2937; }
-
-        .nav-divider {
-            width: 1px;
-            height: 14px;
-            background: #e5e7eb;
-        }
+        header { height: 56px; }
+        .logo { font-weight: 800; }
+        .header-nav { gap: 20px; font-size: 14px; }
+        .header-nav a { padding: 0; border-radius: 0; }
 
         .container {
             max-width: 860px;

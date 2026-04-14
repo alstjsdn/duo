@@ -7,61 +7,8 @@
     <title>글쓰기 - Duo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background: #ffffff;
-            min-height: 100vh;
-            color: #1f2937;
-        }
-
-        header {
-            background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 0 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 58px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1f2937;
-            text-decoration: none;
-            letter-spacing: -0.5px;
-        }
-
-        .logo span { color: #818cf8; }
-
-        .header-nav {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-        }
-
-        .header-nav span { color: #9ca3af; }
-
-        .header-nav a {
-            color: #6b7280;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 6px 10px;
-            border-radius: 6px;
-            transition: all 0.15s;
-        }
-
-        .header-nav a:hover { color: #1f2937; background: rgba(129,140,248,0.06); }
-
-        .nav-divider { width: 1px; height: 14px; background: #e5e7eb; }
-
         .container {
             max-width: 800px;
             margin: 32px auto;

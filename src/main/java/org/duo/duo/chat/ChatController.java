@@ -24,6 +24,13 @@ public class ChatController {
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
 
+    @GetMapping("/chat/rooms")
+    public String myChatRooms(@AuthenticationPrincipal UserPrincipal principal, Model model) {
+        if (principal == null) return "redirect:/login";
+        model.addAttribute("rooms", chatService.getMyChatRooms(principal.getUser().getUserId()));
+        return "chat-rooms";
+    }
+
     @GetMapping("/chat/{boardId}")
     public String chatRoom(@PathVariable Long boardId,
                            @AuthenticationPrincipal UserPrincipal principal,

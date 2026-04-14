@@ -59,4 +59,17 @@ public class ChatService {
                 .map(ChatMessageResponse::from)
                 .collect(Collectors.toList());
     }
+
+    public List<MyChatRoomResponse> getMyChatRooms(Long userId) {
+        return chatRoomRepository.findAccessibleByUserId(userId, JoinRequestStatus.APPROVED)
+                .stream()
+                .map(room -> {
+                    boolean isOwner = room.getBoard().getUser().getUserId().equals(userId);
+                    ChatMessage lastMsg = chatMessageRepository
+                            .findTopByChatRoom_IdOrderByCreatedAtDesc(room.getId())
+                            .orElse(null);
+                    return MyChatRoomResponse.of(room, isOwner, lastMsg);
+                })
+                .collect(Collectors.toList());
+    }
 }
