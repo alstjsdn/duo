@@ -2,6 +2,7 @@ package org.duo.duo.board;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.duo.duo.chat.ChatService;
 import org.duo.duo.common.constants.PageConstants;
 import org.duo.duo.common.service.ImageService;
 import org.duo.duo.user.Role;
@@ -22,6 +23,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final ImageService imageService;
+    private final ChatService chatService;
 
     public Page<BoardResponse> search(BoardSearchRequest request, Pageable pageable) {
         Specification<Board> spec = Specification
@@ -39,6 +41,7 @@ public class BoardService {
         request.setContent(imageService.processBase64Images(request.getContent()));
         Board board = Board.toEntity(request, user);
         boardRepository.save(board);
+        chatService.createChatRoom(board);
     }
 
     @Transactional

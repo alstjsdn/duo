@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,7 +35,7 @@ public class SseEmitters {
 
         try {
             emitter.send(SseEmitter.event().name("connect").data("connected"));
-        } catch (IOException e) {
+        } catch (Exception e) {
             cleanup.run();
         }
 
@@ -47,13 +46,16 @@ public class SseEmitters {
         List<SseEmitter> list = emitters.get(userId);
         if (list == null || list.isEmpty()) return;
 
+        List<SseEmitter> dead = new java.util.ArrayList<>();
         for (SseEmitter emitter : list) {
             try {
                 emitter.send(SseEmitter.event().name("notification").data(data));
-            } catch (IOException e) {
-                list.remove(emitter);
+            } catch (Exception e) {
+                log.debug("SSE 전송 실패, emitter 제거: userId={}", userId);
+                dead.add(emitter);
             }
         }
+        list.removeAll(dead);
         if (list.isEmpty()) emitters.remove(userId);
     }
 }

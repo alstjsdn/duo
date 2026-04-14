@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.duo.duo.board.comment.CommentService;
 import org.duo.duo.board.join.JoinRequestService;
+import org.duo.duo.chat.ChatService;
 import org.duo.duo.common.constants.PageConstants;
 import org.duo.duo.common.security.UserPrincipal;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ public class BoardController {
     private final BoardService boardService;
     private final CommentService commentService;
     private final JoinRequestService joinRequestService;
+    private final ChatService chatService;
 
     @GetMapping
     public String list(@ModelAttribute BoardSearchRequest request,
@@ -76,7 +78,9 @@ public class BoardController {
         model.addAttribute("hasApproved", hasApproved);
         model.addAttribute("editBlocked", editBlocked);
         if (principal != null) {
-            model.addAttribute("myPendingLines", joinRequestService.getMyPendingLines(id, principal.getUser().getUserId()));
+            Long userId = principal.getUser().getUserId();
+            model.addAttribute("myPendingLines", joinRequestService.getMyPendingLines(id, userId));
+            model.addAttribute("hasChatAccess", chatService.hasAccess(id, userId));
         }
         return "board-detail";
     }

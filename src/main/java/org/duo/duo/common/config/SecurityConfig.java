@@ -25,7 +25,7 @@ public class SecurityConfig {
         http
 
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/**")
+                .ignoringRequestMatchers("/api/**", "/ws/**")
             )
 
             .headers(headers -> headers
@@ -34,7 +34,7 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers("/", "/login", "/signup", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
+                .requestMatchers("/", "/login", "/signup", "/css/**", "/js/**", "/images/**", "/uploads/**", "/ws/**").permitAll()
 
                 .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/notifications/**").hasAnyRole("USER", "ADMIN")
@@ -45,6 +45,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/boards/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/profile/*").permitAll()
                 .requestMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
+
+                .requestMatchers("/chat/**").hasAnyRole("USER", "ADMIN")
 
                 .requestMatchers("/admin/**").hasRole("ADMIN")
             )

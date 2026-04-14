@@ -14,4 +14,6 @@ public interface JoinRequestRepository extends JpaRepository<JoinRequest, Long> 
     boolean existsByBoard_BoardIdAndUser_UserIdAndGameLineAndStatus(Long boardId, Long userId, GameLine gameLine, JoinRequestStatus status);
 
     boolean existsByBoard_BoardIdAndGameLineAndStatus(Long boardId, GameLine gameLine, JoinRequestStatus status);
+
+    boolean existsByBoard_BoardIdAndUser_UserIdAndStatus(Long boardId, Long userId, JoinRequestStatus status);
 }
