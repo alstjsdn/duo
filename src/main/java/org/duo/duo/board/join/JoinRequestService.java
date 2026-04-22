@@ -129,6 +129,35 @@ public class JoinRequestService {
     }
 
     @Transactional
+    public void kick(Long boardId, Long requestId, User user) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        if (!board.getUser().getUserId().equals(user.getUserId())) {
+            throw new AccessDeniedException("추방 권한이 없습니다.");
+        }
+
+        JoinRequest target = joinRequestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("요청을 찾을 수 없습니다."));
+
+        if (target.getStatus() != JoinRequestStatus.APPROVED) {
+            throw new IllegalStateException("승인된 파티원만 추방할 수 있습니다.");
+        }
+
+        target.reject();
+
+        if (board.getStatus() == BoardStatus.COMPLETED) {
+            board.updateStatus(BoardStatus.RECRUITING);
+        }
+
+        notificationService.send(
+                target.getUser(),
+                NotificationType.JOIN_KICKED,
+                "[" + target.getGameLine().getName() + "] 파티에서 추방되었습니다.",
+                "/boards/" + boardId
+        );
+    }
+
+    @Transactional
     public void reject(Long boardId, Long requestId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));

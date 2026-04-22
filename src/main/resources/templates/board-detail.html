@@ -809,6 +809,13 @@
                         <span class="party-riot-id" th:text="${approved.riotId + '#' + approved.riotTag}"></span>
                     </div>
                     <span class="party-status-approved">승인됨</span>
+                    <form th:if="${board.username == #authentication?.name}"
+                          th:action="@{/boards/{boardId}/join/{reqId}/kick(boardId=${board.boardId}, reqId=${approved.id})}"
+                          method="post" style="display:inline;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn-reject-req"
+                                onclick="return confirm('이 파티원을 추방하시겠습니까?')">추방</button>
+                    </form>
                 </th:block>
 
                 <!-- 빈 슬롯 -->

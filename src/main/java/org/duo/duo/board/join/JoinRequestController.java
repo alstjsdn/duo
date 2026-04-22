@@ -37,4 +37,12 @@ public class JoinRequestController {
         joinRequestService.reject(boardId, requestId, principal.getUser());
         return "redirect:/boards/" + boardId;
     }
+
+    @PostMapping("/{requestId}/kick")
+    public String kick(@PathVariable Long boardId,
+                       @PathVariable Long requestId,
+                       @AuthenticationPrincipal UserPrincipal principal) {
+        joinRequestService.kick(boardId, requestId, principal.getUser());
+        return "redirect:/boards/" + boardId;
+    }
 }
