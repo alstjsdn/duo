@@ -5,6 +5,14 @@
 <header th:fragment="header">
 <a th:href="@{/boards}" class="logo">Du<span>o</span></a>
     <nav class="header-nav">
+        <div>
+            <a th:href="@{/boards}">듀오찾기</a>
+        </div>
+        <div class="nav-divider"></div>
+        <div>
+            <a th:href="@{/freeboards}">자유게시판</a>
+        </div>
+        <div class="nav-divider"></div>
         <div sec:authorize="isAuthenticated()">
             <span sec:authentication="name"></span>님
         </div>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${board.title} + ' - Duo'">게시글 - Duo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+
+        .post-card {
+            background: #ffffff;
+            border: 1px solid #e8e5f3;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(129,140,248,0.06);
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .post-header {
+            padding: 28px 32px 22px;
+            border-bottom: 1px solid #f0eeff;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .badge-FREE     { background: #eff6ff; color: #2563eb; }
+        .badge-QUESTION { background: #fffbeb; color: #d97706; }
+        .badge-HUMOR    { background: #f0fdf4; color: #16a34a; }
+
+        .post-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            line-height: 1.4;
+            margin-bottom: 16px;
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 0;
+            font-size: 13px;
+            color: #9ca3af;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .meta-item:not(:last-child)::after {
+            content: '·';
+            margin: 0 10px;
+            color: #d1d5db;
+        }
+
+        .meta-label { color: #9ca3af; }
+        .meta-value { color: #4b5563; font-weight: 500; }
+
+        .post-body {
+            padding: 32px;
+            font-size: 15px;
+            color: #4b5563;
+            line-height: 1.9;
+            min-height: 200px;
+        }
+
+        .post-body p { margin-bottom: 0.8em; }
+        .post-body ul, .post-body ol { margin: 0.5em 0 0.5em 1.5em; }
+        .post-body blockquote { border-left: 3px solid #e8e5f3; padding-left: 14px; color: #6b7280; margin: 0.5em 0; }
+        .post-body table { border-collapse: collapse; margin: 0.5em 0; }
+        .post-body table td, .post-body table th { border: 1px solid #e5e7eb; padding: 6px 12px; }
+        .post-body img { max-width: 100%; height: auto; border-radius: 8px; margin: 0.5em 0; }
+        .post-body figure.image { margin: 0.8em 0; text-align: center; }
+        .post-body figure.image figcaption { font-size: 13px; color: #9ca3af; margin-top: 4px; }
+
+        .post-footer {
+            padding: 14px 32px;
+            border-top: 1px solid #f0eeff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafaff;
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+
+        .btn-back { background: #ffffff; color: #6b7280; border: 1.5px solid #e5e7eb; }
+        .btn-back:hover { border-color: #818cf8; color: #1f2937; }
+        .btn-edit { background: #818cf8; color: #ffffff; }
+        .btn-edit:hover { background: #7070f0; }
+        .btn-delete { background: #ffffff; color: #dc2626; border: 1.5px solid #fecaca; }
+        .btn-delete:hover { background: #fef2f2; }
+        .action-btns { display: flex; gap: 8px; align-items: center; }
+
+        .author-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #fafaff;
+            border: 1px solid #e8e5f3;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 16px;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .author-card:hover {
+            border-color: rgba(129,140,248,0.3);
+            background: rgba(129,140,248,0.04);
+        }
+
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #818cf8, #6366f1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .author-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .author-info { flex: 1; }
+        .author-name { font-size: 14px; font-weight: 700; color: #1f2937; margin-bottom: 3px; }
+        .author-bio { font-size: 13px; color: #9ca3af; line-height: 1.5; }
+
+        /* 댓글 */
+        .comment-section { margin-top: 0; }
+        .comment-count { font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 10px; }
+        .comment-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+
+        .comment-item {
+            background: #fafaff;
+            border: 1px solid #e8e5f3;
+            border-radius: 10px;
+            padding: 16px 20px;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .comment-author { font-size: 13px; font-weight: 600; color: #4b5563; }
+        .comment-date { font-size: 12px; color: #9ca3af; }
+
+        .comment-content {
+            font-size: 14px;
+            color: #4b5563;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .comment-actions { display: flex; gap: 6px; margin-top: 10px; }
+
+        .btn-comment-action {
+            background: #ffffff;
+            border: 1.5px solid #e5e7eb;
+            color: #6b7280;
+            padding: 4px 11px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-comment-action:hover { border-color: #818cf8; color: #1f2937; }
+
+        .btn-comment-delete {
+            background: #ffffff;
+            border: 1.5px solid #fecaca;
+            color: #dc2626;
+            padding: 4px 11px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-comment-delete:hover { background: #fef2f2; }
+
+        .comment-edit-form { display: none; margin-top: 10px; }
+
+        .comment-edit-form textarea,
+        .reply-form-wrap textarea,
+        .comment-form textarea {
+            width: 100%;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            background: #fafaff;
+            color: #1f2937;
+            transition: all 0.15s;
+        }
+
+        .comment-edit-form textarea { min-height: 70px; }
+        .reply-form-wrap textarea { min-height: 60px; font-size: 13px; }
+        .comment-form textarea { min-height: 80px; }
+
+        .comment-edit-form textarea:focus,
+        .reply-form-wrap textarea:focus,
+        .comment-form textarea:focus {
+            border-color: #818cf8;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(129,140,248,0.12);
+        }
+
+        .comment-edit-footer,
+        .reply-form-footer,
+        .comment-form-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .comment-form-footer { justify-content: space-between; }
+
+        .btn-cancel {
+            background: #ffffff;
+            color: #6b7280;
+            border: 1.5px solid #e5e7eb;
+            padding: 6px 14px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-cancel:hover { border-color: #818cf8; }
+
+        .btn-save {
+            background: #818cf8;
+            color: #ffffff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-save:hover { background: #7070f0; }
+
+        .reply-list {
+            margin-top: 10px;
+            margin-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-left: 12px;
+            border-left: 2px solid #e8e5f3;
+        }
+
+        .reply-item {
+            background: #ffffff;
+            border: 1px solid #e8e5f3;
+            border-radius: 8px;
+            padding: 12px 16px;
+        }
+
+        .reply-list .reply-list { margin-left: 14px; }
+
+        .reply-form-wrap {
+            display: none;
+            margin-top: 8px;
+            margin-left: 20px;
+            padding-left: 12px;
+            border-left: 2px solid #e8e5f3;
+        }
+
+        .btn-reply {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            padding: 4px 0;
+            margin-top: 8px;
+            transition: color 0.15s;
+        }
+
+        .btn-reply:hover { color: #818cf8; }
+
+        .comment-form {
+            background: #fafaff;
+            border: 1px solid #e8e5f3;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+        }
+
+        .btn-comment {
+            background: #818cf8;
+            color: #ffffff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(129,140,248,0.25);
+            transition: background 0.15s;
+        }
+
+        .btn-comment:hover { background: #7070f0; }
+
+        .comment-error { font-size: 13px; color: #dc2626; }
+
+        .comment-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            margin: 12px 0;
+        }
+
+        .comment-pagination a,
+        .comment-pagination span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1.5px solid #e5e7eb;
+            color: #6b7280;
+            text-decoration: none;
+            background: #ffffff;
+            transition: all 0.15s;
+        }
+
+        .comment-pagination a:hover { border-color: #818cf8; color: #818cf8; }
+        .comment-pagination .active { background: #818cf8; color: #ffffff; border-color: #818cf8; }
+        .comment-pagination .disabled { color: #d1d5db; pointer-events: none; background: #fafaff; }
+    </style>
+</head>
+<body>
+
+<header th:replace="~{fragments/header :: header}"></header>
+
+<div class="container">
+
+    <div class="post-card">
+        <div class="post-header">
+            <div class="badge"
+                 th:classappend="'badge-' + ${board.type}"
+                 th:text="${board.type.name}"></div>
+            <div class="post-title" th:text="${board.title}"></div>
+            <div class="post-meta">
+                <div class="meta-item">
+                    <span class="meta-label">작성자</span>
+                    <a class="meta-value" th:href="@{/profile/{username}(username=${board.username})}" th:text="${board.author}"></a>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">작성일</span>
+                    <span class="meta-value" th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">조회</span>
+                    <span class="meta-value" th:text="${board.viewCount}"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="post-body" th:utext="${board.content}"></div>
+
+        <div class="post-footer">
+            <a th:href="@{/freeboards}" class="btn btn-back">← 목록으로</a>
+            <div class="action-btns"
+                 th:if="${board.username == #authentication?.name or #authentication?.authorities.![authority].contains('ROLE_ADMIN')}">
+                <a th:href="@{/freeboards/{id}/edit(id=${board.id})}" class="btn btn-edit">수정</a>
+                <form th:action="@{/freeboards/{id}/delete(id=${board.id})}" method="post" style="display:inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-delete"
+                            onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 작성자 프로필 -->
+    <a class="author-card" th:href="@{/profile/{username}(username=${board.username})}">
+        <div class="author-avatar" th:if="${board.profileImage != null}">
+            <img th:src="${board.profileImage}" alt="프로필">
+        </div>
+        <div class="author-avatar" th:unless="${board.profileImage != null}"
+             th:text="${#strings.substring(board.author, 0, 1)}"></div>
+        <div class="author-info">
+            <div class="author-name" th:text="${board.author}"></div>
+            <div class="author-bio" th:if="${board.bio != null}" th:text="${board.bio}"></div>
+            <div class="author-bio" th:unless="${board.bio != null}">소개가 없습니다.</div>
+        </div>
+    </a>
+
+    <!-- 댓글 섹션 -->
+    <div class="comment-section">
+
+        <div sec:authorize="isAuthenticated()">
+            <form class="comment-form" th:action="@{/freeboards/{id}/comments/write(id=${board.id})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <textarea name="content" placeholder="댓글을 입력하세요."></textarea>
+                <div class="comment-form-footer">
+                    <span class="comment-error" th:if="${commentError}" th:text="${commentError}"></span>
+                    <span th:unless="${commentError}"></span>
+                    <button type="submit" class="btn-comment">댓글 등록</button>
+                </div>
+            </form>
+        </div>
+
+        <div th:if="${comments.totalElements > 0}">
+            <div class="comment-count" th:text="'댓글 ' + ${comments.totalElements} + '개'"></div>
+            <div class="comment-list" id="comment-list"></div>
+
+            <div class="comment-pagination" th:if="${comments.totalPages > 1}">
+                <a th:classappend="${comments.first} ? 'disabled'"
+                   th:href="@{/freeboards/{id}(id=${board.id}, commentPage=${comments.number - 1})}">&lsaquo;</a>
+                <th:block th:each="i : ${#numbers.sequence(0, comments.totalPages - 1)}">
+                    <span th:if="${i == comments.number}" class="active" th:text="${i + 1}"></span>
+                    <a th:unless="${i == comments.number}"
+                       th:href="@{/freeboards/{id}(id=${board.id}, commentPage=${i})}"
+                       th:text="${i + 1}"></a>
+                </th:block>
+                <a th:classappend="${comments.last} ? 'disabled'"
+                   th:href="@{/freeboards/{id}(id=${board.id}, commentPage=${comments.number + 1})}">&rsaquo;</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script th:inline="javascript">
+        var COMMENT_DATA = {
+            boardId: [[${board.id}]],
+            csrfParam: [[${_csrf.parameterName}]],
+            csrfToken: [[${_csrf.token}]],
+            currentUser: [[${#authentication?.name}]],
+            isAdmin: [[${#authentication != null && #authentication.authorities.![authority].contains('ROLE_ADMIN')}]],
+            isAuthenticated: [[${#authentication != null && #authentication.name != 'anonymousUser'}]],
+            comments: [[${comments.content}]]
+        };
+    </script>
+
+</div>
+
+<script>
+    function escapeHtml(text) {
+        var d = document.createElement('div');
+        d.textContent = text;
+        return d.innerHTML;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        var d = new Date(dateStr);
+        var pad = function(n) { return n < 10 ? '0' + n : n; };
+        return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())
+            + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    }
+
+    function canEdit(comment) {
+        return COMMENT_DATA.currentUser === comment.username || COMMENT_DATA.isAdmin;
+    }
+
+    function renderComment(comment, isRoot) {
+        var D = COMMENT_DATA;
+        var id = comment.id;
+        var cls = isRoot ? 'comment-item' : 'reply-item';
+
+        var html = '<div class="' + cls + '" id="comment-' + id + '">';
+
+        html += '<div class="comment-header">'
+            + '<span class="comment-author">' + escapeHtml(comment.author) + '</span>'
+            + '<span class="comment-date">' + formatDate(comment.createdAt) + '</span>'
+            + '</div>';
+
+        html += '<div class="comment-content" id="content-' + id + '">' + escapeHtml(comment.content) + '</div>';
+
+        if (canEdit(comment)) {
+            html += '<div class="comment-actions" id="actions-' + id + '">'
+                + '<button type="button" class="btn-comment-action" onclick="toggleEdit(' + id + ')">수정</button>'
+                + '<form action="/freeboards/' + D.boardId + '/comments/' + id + '/delete" method="post" style="display:inline;">'
+                + '<input type="hidden" name="' + D.csrfParam + '" value="' + D.csrfToken + '"/>'
+                + '<button type="submit" class="btn-comment-delete" onclick="return confirm(\'댓글을 삭제하시겠습니까?\')">삭제</button>'
+                + '</form></div>';
+
+            html += '<div class="comment-edit-form" id="edit-form-' + id + '">'
+                + '<form action="/freeboards/' + D.boardId + '/comments/' + id + '/edit" method="post">'
+                + '<input type="hidden" name="' + D.csrfParam + '" value="' + D.csrfToken + '"/>'
+                + '<textarea name="content">' + escapeHtml(comment.content) + '</textarea>'
+                + '<div class="comment-edit-footer">'
+                + '<button type="button" class="btn-cancel" onclick="cancelEdit(' + id + ')">취소</button>'
+                + '<button type="submit" class="btn-save">저장</button>'
+                + '</div></form></div>';
+        }
+
+        if (comment.children && comment.children.length > 0) {
+            html += '<div class="reply-list">';
+            for (var i = 0; i < comment.children.length; i++) {
+                html += renderComment(comment.children[i], false);
+            }
+            html += '</div>';
+        }
+
+        if (D.isAuthenticated) {
+            html += '<button type="button" class="btn-reply" onclick="toggleReply(' + id + ')">↩ 답글</button>'
+                + '<div class="reply-form-wrap" id="reply-form-' + id + '">'
+                + '<form action="/freeboards/' + D.boardId + '/comments/write" method="post">'
+                + '<input type="hidden" name="' + D.csrfParam + '" value="' + D.csrfToken + '"/>'
+                + '<input type="hidden" name="parentId" value="' + id + '"/>'
+                + '<textarea name="content" placeholder="답글을 입력하세요."></textarea>'
+                + '<div class="reply-form-footer">'
+                + '<button type="button" class="btn-cancel" onclick="toggleReply(' + id + ')">취소</button>'
+                + '<button type="submit" class="btn-save">등록</button>'
+                + '</div></form></div>';
+        }
+
+        html += '</div>';
+        return html;
+    }
+
+    (function() {
+        var list = document.getElementById('comment-list');
+        if (!list) return;
+        var html = '';
+        var comments = COMMENT_DATA.comments;
+        for (var i = 0; i < comments.length; i++) {
+            html += renderComment(comments[i], true);
+        }
+        list.innerHTML = html;
+    })();
+
+    function toggleEdit(commentId) {
+        document.getElementById('edit-form-' + commentId).style.display = 'block';
+        document.getElementById('content-' + commentId).style.display = 'none';
+        document.getElementById('actions-' + commentId).style.display = 'none';
+    }
+
+    function cancelEdit(commentId) {
+        document.getElementById('edit-form-' + commentId).style.display = 'none';
+        document.getElementById('content-' + commentId).style.display = '';
+        document.getElementById('actions-' + commentId).style.display = '';
+    }
+
+    function toggleReply(commentId) {
+        var form = document.getElementById('reply-form-' + commentId);
+        form.style.display = form.style.display === 'block' ? 'none' : 'block';
+    }
+</script>
+
+</body>
+</html>

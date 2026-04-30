@@ -43,6 +43,8 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.GET, "/boards/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/boards/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/freeboards/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/freeboards/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/profile/*").permitAll()
                 .requestMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
 
