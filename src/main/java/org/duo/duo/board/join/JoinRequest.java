@@ -53,4 +53,8 @@ public class JoinRequest {
     public void reject() {
         this.status = JoinRequestStatus.REJECTED;
     }
+
+    public void kick() {
+        this.status = JoinRequestStatus.KICKED;
+    }
 }

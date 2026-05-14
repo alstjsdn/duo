@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>트롤 신고 게시판 - Duo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .page-title span {
+            color: #dc2626;
+        }
+
+        .btn-report {
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            background: #dc2626;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-report:hover { background: #b91c1c; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+            font-size: 15px;
+            background: #fff;
+            border: 1px solid #e8e5f3;
+            border-radius: 12px;
+        }
+
+        .report-card {
+            background: #fff;
+            border: 1px solid #e8e5f3;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 4px rgba(129,140,248,0.05);
+        }
+
+        .report-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .troll-badge {
+            display: inline-block;
+            background: #fef2f2;
+            color: #dc2626;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid #fecaca;
+            flex-shrink: 0;
+        }
+
+        .troll-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .troll-riot-id {
+            font-size: 13px;
+            color: #6366f1;
+            font-weight: 600;
+        }
+
+        .report-content {
+            font-size: 14px;
+            color: #4b5563;
+            line-height: 1.7;
+            background: #fafaff;
+            border: 1px solid #f0eeff;
+            border-radius: 8px;
+            padding: 12px 16px;
+            white-space: pre-wrap;
+        }
+
+        .report-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .report-board-link {
+            font-size: 12px;
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .report-board-link:hover {
+            text-decoration: underline;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            margin-top: 24px;
+        }
+
+        .pagination a,
+        .pagination span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1.5px solid #e5e7eb;
+            color: #6b7280;
+            text-decoration: none;
+            background: #ffffff;
+            transition: all 0.15s;
+        }
+
+        .pagination a:hover { border-color: #818cf8; color: #818cf8; }
+        .pagination .active { background: #818cf8; color: #fff; border-color: #818cf8; }
+        .pagination .disabled { color: #d1d5db; pointer-events: none; background: #fafaff; }
+
+        /* 모달 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: #fff;
+            border-radius: 14px;
+            padding: 28px 32px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+        }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            background: #fafaff;
+            color: #1f2937;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #818cf8;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(129,140,248,0.12);
+        }
+
+        .form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .btn-cancel {
+            background: #fff;
+            color: #6b7280;
+            border: 1.5px solid #e5e7eb;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+
+        .btn-cancel:hover { border-color: #818cf8; }
+
+        .btn-submit {
+            background: #dc2626;
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-submit:hover { background: #b91c1c; }
+        .btn-submit:disabled { background: #f87171; cursor: not-allowed; }
+
+        .modal-msg {
+            font-size: 13px;
+            margin-top: 8px;
+            min-height: 18px;
+        }
+
+        .modal-msg.error { color: #dc2626; }
+        .modal-msg.success { color: #16a34a; }
+
+        .member-select {
+            width: 100%;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            background: #fafaff;
+            color: #1f2937;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+            cursor: pointer;
+        }
+
+        .member-select:focus {
+            border-color: #818cf8;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(129,140,248,0.12);
+        }
+
+        .member-loading {
+            font-size: 13px;
+            color: #9ca3af;
+            padding: 6px 0;
+        }
+    </style>
+</head>
+<body>
+
+<header th:replace="~{fragments/header :: header}"></header>
+
+<div class="container">
+    <div class="page-header">
+        <div class="page-title">트롤 <span>신고</span> 게시판</div>
+        <button class="btn-report" sec:authorize="isAuthenticated()" onclick="openModal()">신고하기</button>
+    </div>
+
+    <div th:if="${reports.totalElements == 0}" class="empty-state">
+        아직 신고된 유저가 없습니다.
+    </div>
+
+    <div th:each="r : ${reports.content}" class="report-card">
+        <div class="report-card-header">
+            <span class="troll-badge">TROLL</span>
+            <div>
+                <div class="troll-name" th:text="${r.reportedName}"></div>
+                <div class="troll-riot-id" th:text="${r.reportedRiotId + ' #' + r.reportedRiotTag}"></div>
+            </div>
+        </div>
+        <div class="report-content" th:text="${r.content}"></div>
+        <div class="report-meta">
+            <span th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+            <a th:if="${r.boardId != null}"
+               class="report-board-link"
+               th:href="@{/boards/{id}(id=${r.boardId})}"
+               th:text="'파티: ' + ${r.boardTitle}">파티 링크</a>
+            <span th:if="${r.boardId == null}" class="report-board-link" style="color:#9ca3af;">파티: (삭제됨)</span>
+        </div>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div class="pagination" th:if="${reports.totalPages > 1}">
+        <a th:classappend="${reports.first} ? 'disabled'"
+           th:href="@{/trolls(page=${reports.number - 1})}">&lsaquo;</a>
+        <th:block th:each="i : ${#numbers.sequence(0, reports.totalPages - 1)}">
+            <span th:if="${i == reports.number}" class="active" th:text="${i + 1}"></span>
+            <a th:unless="${i == reports.number}"
+               th:href="@{/trolls(page=${i})}" th:text="${i + 1}"></a>
+        </th:block>
+        <a th:classappend="${reports.last} ? 'disabled'"
+           th:href="@{/trolls(page=${reports.number + 1})}">&rsaquo;</a>
+    </div>
+</div>
+
+<!-- 신고 모달 -->
+<div class="modal-overlay" id="reportModal" onclick="closeOnOverlay(event)">
+    <div class="modal">
+        <div class="modal-title">트롤 신고</div>
+        <p style="font-size:12px;color:#9ca3af;margin:-8px 0 14px;">최근 30일 이내 함께 파티를 진행한 유저만 신고할 수 있습니다.</p>
+        <div class="form-group" style="margin-bottom:12px;">
+            <label>신고할 유저</label>
+            <div id="memberLoading" class="member-loading">불러오는 중...</div>
+            <select id="memberSelect" class="member-select" style="display:none;" onchange="onMemberSelect()">
+                <option value="">-- 유저를 선택하세요 --</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>신고 내용</label>
+            <textarea id="inputContent" placeholder="어떤 행동을 했는지 구체적으로 적어주세요."></textarea>
+        </div>
+        <div class="modal-msg" id="modalMsg"></div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">취소</button>
+            <button class="btn-submit" id="submitBtn" onclick="submitReport()">신고</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal() {
+        document.getElementById('reportModal').classList.add('active');
+        loadRecentMembers();
+    }
+
+    function loadRecentMembers() {
+        var loading = document.getElementById('memberLoading');
+        var select = document.getElementById('memberSelect');
+        var btn = document.getElementById('submitBtn');
+
+        loading.style.display = 'block';
+        select.style.display = 'none';
+        btn.disabled = true;
+
+        fetch('/api/reports/recent-members')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                loading.style.display = 'none';
+                select.innerHTML = '<option value="">-- 유저를 선택하세요 --</option>';
+
+                if (!data.success || !data.data || data.data.length === 0) {
+                    var opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = '최근 30일 이내 함께한 파티원이 없습니다.';
+                    opt.disabled = true;
+                    select.appendChild(opt);
+                    select.style.display = 'block';
+                    return;
+                }
+
+                data.data.forEach(function(m) {
+                    var opt = document.createElement('option');
+                    opt.value = m.riotId + '|' + m.riotTag;
+                    opt.textContent = m.riotId + ' #' + m.riotTag + ' (' + m.name + ')';
+                    select.appendChild(opt);
+                });
+
+                select.style.display = 'block';
+                btn.disabled = false;
+            })
+            .catch(function() {
+                loading.textContent = '목록을 불러오지 못했습니다.';
+            });
+    }
+
+    function onMemberSelect() {
+        var select = document.getElementById('memberSelect');
+        var btn = document.getElementById('submitBtn');
+        btn.disabled = !select.value;
+    }
+
+    function closeModal() {
+        document.getElementById('reportModal').classList.remove('active');
+        document.getElementById('memberSelect').value = '';
+        document.getElementById('inputContent').value = '';
+        document.getElementById('modalMsg').textContent = '';
+        document.getElementById('modalMsg').className = 'modal-msg';
+        document.getElementById('submitBtn').disabled = false;
+    }
+
+    function closeOnOverlay(e) {
+        if (e.target === document.getElementById('reportModal')) closeModal();
+    }
+
+    function submitReport() {
+        var select = document.getElementById('memberSelect');
+        var content = document.getElementById('inputContent').value.trim();
+        var msg = document.getElementById('modalMsg');
+
+        if (!select.value) {
+            msg.textContent = '신고할 유저를 선택해주세요.';
+            msg.className = 'modal-msg error';
+            return;
+        }
+        if (!content) {
+            msg.textContent = '신고 내용을 입력해주세요.';
+            msg.className = 'modal-msg error';
+            return;
+        }
+
+        var parts = select.value.split('|');
+        var riotId = parts[0];
+        var riotTag = parts[1];
+
+        var btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+
+        fetch('/api/reports', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ riotId: riotId, riotTag: riotTag, content: content })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                msg.textContent = '신고가 접수되었습니다.';
+                msg.className = 'modal-msg success';
+                setTimeout(function() { location.reload(); }, 800);
+            } else {
+                msg.textContent = data.message || '신고에 실패했습니다.';
+                msg.className = 'modal-msg error';
+                btn.disabled = false;
+            }
+        })
+        .catch(function() {
+            msg.textContent = '오류가 발생했습니다. 다시 시도해주세요.';
+            msg.className = 'modal-msg error';
+            btn.disabled = false;
+        });
+    }
+</script>
+
+</body>
+</html>

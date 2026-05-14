@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum JoinRequestStatus {
     PENDING("요청중"),
     APPROVED("승인됨"),
-    REJECTED("거절됨");
+    REJECTED("거절됨"),
+    KICKED("추방됨");
 
     private final String name;
 }

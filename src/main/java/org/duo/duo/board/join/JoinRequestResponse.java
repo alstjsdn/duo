@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class JoinRequestResponse {
 
     private Long id;
+    private Long userId;
     private String username;
     private String name;
     private String riotId;
@@ -20,6 +21,7 @@ public class JoinRequestResponse {
     public static JoinRequestResponse from(JoinRequest request) {
         JoinRequestResponse r = new JoinRequestResponse();
         r.id = request.getId();
+        r.userId = request.getUser().getUserId();
         r.username = request.getUser().getUsername();
         r.name = request.getUser().getName();
         r.riotId = request.getUser().getRiotId();

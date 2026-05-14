@@ -44,6 +44,11 @@ public class JoinRequestService {
         return !joinRequestRepository.findByBoard_BoardIdAndStatus(boardId, JoinRequestStatus.APPROVED).isEmpty();
     }
 
+    public boolean wasMember(Long boardId, Long userId) {
+        return joinRequestRepository.existsByBoard_BoardIdAndUser_UserIdAndStatusIn(
+                boardId, userId, List.of(JoinRequestStatus.APPROVED, JoinRequestStatus.KICKED));
+    }
+
     public Set<GameLine> getMyPendingLines(Long boardId, Long userId) {
         return joinRequestRepository.findByBoard_BoardIdAndStatus(boardId, JoinRequestStatus.PENDING)
                 .stream()
@@ -143,7 +148,7 @@ public class JoinRequestService {
             throw new IllegalStateException("승인된 파티원만 추방할 수 있습니다.");
         }
 
-        target.reject();
+        target.kick();
 
         if (board.getStatus() == BoardStatus.COMPLETED) {
             board.updateStatus(BoardStatus.RECRUITING);

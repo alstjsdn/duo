@@ -13,6 +13,10 @@
             <a th:href="@{/freeboards}">자유게시판</a>
         </div>
         <div class="nav-divider"></div>
+        <div>
+            <a th:href="@{/trolls}">트롤 신고</a>
+        </div>
+        <div class="nav-divider"></div>
         <div sec:authorize="isAuthenticated()">
             <span sec:authentication="name"></span>님
         </div>

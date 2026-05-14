@@ -38,8 +38,10 @@ public class SecurityConfig {
 
                 .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/notifications/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/reports/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/riot/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/trolls").permitAll()
 
                 .requestMatchers(HttpMethod.GET, "/boards/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/boards/**").hasAnyRole("USER", "ADMIN")

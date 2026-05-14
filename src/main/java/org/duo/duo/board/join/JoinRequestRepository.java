@@ -3,6 +3,7 @@ package org.duo.duo.board.join;
 import org.duo.duo.board.GameLine;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface JoinRequestRepository extends JpaRepository<JoinRequest, Long> {
@@ -16,4 +17,10 @@ public interface JoinRequestRepository extends JpaRepository<JoinRequest, Long> 
     boolean existsByBoard_BoardIdAndGameLineAndStatus(Long boardId, GameLine gameLine, JoinRequestStatus status);
 
     boolean existsByBoard_BoardIdAndUser_UserIdAndStatus(Long boardId, Long userId, JoinRequestStatus status);
+
+    List<JoinRequest> findByBoard_BoardIdAndStatusIn(Long boardId, List<JoinRequestStatus> statuses);
+
+    List<JoinRequest> findByUser_UserIdAndStatusInAndBoard_CreatedAtAfter(Long userId, List<JoinRequestStatus> statuses, LocalDateTime after);
+
+    boolean existsByBoard_BoardIdAndUser_UserIdAndStatusIn(Long boardId, Long userId, List<JoinRequestStatus> statuses);
 }
